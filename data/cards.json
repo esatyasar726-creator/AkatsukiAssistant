@@ -1,0 +1,73 @@
+{
+  "final_fusion": {
+    "id": "final_fusion",
+    "name": "Final Fusion",
+    "type": "Attack / Special",
+    "rarity": "SP / SSR",
+    "description": "Represents Aizen's final form after fusing with the Hogyoku. Grants immense power and reality-warping abilities.",
+    "skills": {
+      "skill1": {
+        "name": "Fragor",
+        "effect": "Increases ATK by 25% and Accuracy by 10% for 12 seconds. Deals 450% damage in a wide area.",
+        "cooldown": "15s",
+        "best_usage": "Use as a combo starter to buff subsequent high-damage skills."
+      },
+      "skill2": {
+        "name": "Ultra-Fragor",
+        "effect": "Creates a containment field that shreds 30% of target's Defense. Deals continuous damage over 4 seconds.",
+        "cooldown": "20s",
+        "best_usage": "Target high-defense guards or bosses to break their protection."
+      },
+      "skill3": {
+        "name": "Hogyoku Transcendence",
+        "explanation": "Completely ignores 40% of target's block and adds 10% life steal to all attacks for the duration. If the target is below 20% HP, damage is doubled.",
+        "hidden_interactions": "Stacks with soul hall buffs that increase execution threshold.",
+        "priority": "Highest",
+        "combos": "Skill 1 -> Skill 2 -> Skill 3 for maximum execution potential."
+      }
+    },
+    "passive_effects": "Grants +5% Damage Reduction for every 10% HP lost.",
+    "scaling": "Attack scaling is 1.5x higher than average SP cards.",
+    "buffs_granted": ["ATK UP", "Accuracy UP", "Life Steal"],
+    "debuffs_applied": ["DEF Reduction", "Armor Break"],
+    "stats": {
+      "hp": "+15000",
+      "attack": "+3500",
+      "defense": "+1200",
+      "crit": "+500",
+      "block": "+200",
+      "pierce": "+800"
+    },
+    "rage": {
+      "generation": "Increases by 15% when attacking targets with higher HP.",
+      "recovery": "+20 per second in combat."
+    },
+    "analysis": {
+      "pvp": "Dominates the current meta by providing both sustain and burst.",
+      "pve": "Excellent for clearing high-level Rift and World Boss due to defense shred.",
+      "guild_war": "High utility for point accumulation in large-scale brawls.",
+      "arena": "Essential for high-rank players to counter tanky setups."
+    },
+    "strategy": {
+      "weaknesses": "Vulnerable to hard CC (Stun/Freeze) during Skill 2 animation.",
+      "strengths": "Peerless execution power and high sustainability.",
+      "strong_against": ["Defensive Guards", "Low-mobility Healers"],
+      "countered_by": ["Silence focused builds", "High evasion characters"],
+      "best_synergies": ["SP Shinji", "Halloween Nelliel"],
+      "bad_synergies": ["Characters that knock back enemies away from Skill 2 field."]
+    },
+    "recommendations": {
+      "bonds": ["Hogyoku", "Butterfly Aizen", "Gin Ichimaru"],
+      "team": ["SP Aizen", "Mugetsu", "Chair Aizen"],
+      "assist": "Nelliel (Halloween)",
+      "guard": "Yamamoto (Genryusai)"
+    },
+    "rating": {
+      "overall": "9.8/10",
+      "pvp": "10/10",
+      "pve": "9.5/10",
+      "investment": "Maximum Priority"
+    },
+    "expert_opinion": "This card is a game-changer. If you are running an ATK-focused build, this is your holy grail. The life steal combined with block ignore makes you nearly unstoppable if you manage your cooldowns correctly."
+  }
+}

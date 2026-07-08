@@ -1,0 +1,14 @@
+{
+  "weekly_events": ["Clan War", "Inner World", "Top VS", "Las Noches"],
+  "rotation": {
+    "special_gacha": {
+      "cycle": 14,
+      "items": ["SP Aizen", "SP Yamamoto", "Mugetsu"]
+    },
+    "card_event": {
+      "cycle": 21,
+      "items": ["Final Fusion Card", "God of Destruction Card"]
+    }
+  },
+  "news": "Server merge scheduled for next maintenance. Double crystal event starts on Friday!"
+}
