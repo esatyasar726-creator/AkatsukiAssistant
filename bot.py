@@ -1,6 +1,7 @@
 import os
 import logging
 from datetime import datetime, timedelta
+from deep_translator import GoogleTranslator
 from banner_data import BANNERS, REFERENCE_DATE, REFERENCE_DAY
 from telegram import Update
 from telegram.ext import (
@@ -36,11 +37,11 @@ LEADERS = """
 🏛 Leader
 Klaus
 
-🥈 Vice Leader
-Asta
+🥈 Vice Leaders
+Asta & YurtSever
 
-🛡 Admin
-YurtSever
+🛡 Admins
+BabaYaga & Jaco Tenma
 """
 
 HELP = """
@@ -55,6 +56,7 @@ Available Commands
 /banner
 /nextbanner
 /events
+/translate
 """
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -128,19 +130,42 @@ async def events(update: Update, context: ContextTypes.DEFAULT_TYPE):
     events_text = (
         "📅 CLAN EVENTS SCHEDULE\n\n"
         "⚔ Clan War\n"
-        "Saturday 10:00 (Istanbul GMT+3)\n"
-        "Saturday 07:00 (GMT)\n\n"
+        "Saturday 10:00 AM (Istanbul GMT+3)\n"
+        "Saturday 07:00 AM (GMT)\n\n"
         "🔮 Inner\n"
-        "12:30-13:00, 20:30-21:00 (Istanbul GMT+3)\n"
-        "09:30-10:00, 17:30-18:00 (GMT)\n\n"
+        "12:30 PM-01:00 PM, 08:30 PM-09:00 PM (Istanbul GMT+3)\n"
+        "09:30 AM-10:00 AM, 05:30 PM-06:00 PM (GMT)\n\n"
         "🏆 Top Vs\n"
-        "12:00-14:00, 20:00-22:00 (Istanbul GMT+3)\n"
-        "09:00-11:00, 17:00-19:00 (GMT)\n\n"
+        "12:00 PM-02:00 PM, 08:00 PM-10:00 PM (Istanbul GMT+3)\n"
+        "09:00 AM-11:00 AM, 05:00 PM-07:00 PM (GMT)\n\n"
         "🏰 Las Noches\n"
-        "14:00, 16:00, 18:00, 22:00, 23:00 (Istanbul GMT+3)\n"
-        "11:00, 13:00, 15:00, 19:00, 20:00 (GMT)"
+        "02:00 PM, 04:00 PM, 06:00 PM, 10:00 PM, 11:00 PM (Istanbul GMT+3)\n"
+        "11:00 AM, 01:00 PM, 03:00 PM, 07:00 PM, 08:00 PM (GMT)"
     )
     await update.message.reply_text(events_text)
+
+async def translate(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not update.message.reply_to_message:
+        await update.message.reply_text("Lütfen çevirmek istediğin mesaja yanıt ver.")
+        return
+
+    text_to_translate = update.message.reply_to_message.text or update.message.reply_to_message.caption
+    if not text_to_translate:
+        await update.message.reply_text("❌ Mesaj içeriği bulunamadı.")
+        return
+
+    try:
+        translated_en = GoogleTranslator(source='auto', target='en').translate(text_to_translate)
+        translated_tr = GoogleTranslator(source='auto', target='tr').translate(text_to_translate)
+
+        response = (
+            f"🇬🇧 Eng:\n{translated_en}\n\n"
+            f"🇹🇷 Tur:\n{translated_tr}"
+        )
+        await update.message.reply_text(response)
+    except Exception as e:
+        logging.error(f"Translation error: {e}")
+        await update.message.reply_text("❌ Çeviri yapılırken bir hata oluştu.")
 
 def main():
     if not TOKEN:
@@ -158,6 +183,7 @@ def main():
     application.add_handler(CommandHandler("banner", banner))
     application.add_handler(CommandHandler("nextbanner", next_banner))
     application.add_handler(CommandHandler("events", events))
+    application.add_handler(CommandHandler("translate", translate))
 
     # Botu çalıştırıyoruz (Render gibi platformlar için en ideali polling'dir)
     application.run_polling()
