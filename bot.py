@@ -4,17 +4,23 @@ import logging
 from datetime import datetime, timedelta
 from deep_translator import GoogleTranslator
 from banner_data import BANNERS, REFERENCE_DATE, REFERENCE_DAY
-from database import init_db, update_score, get_user_score, get_leaderboard
+from database import (
+    init_db, update_score, get_user_score, get_leaderboard,
+    add_chat_member, remove_chat_member, get_chat_members,
+    set_reminder_enabled, set_reminder_lead, get_reminder_settings,
+    get_all_chats_with_reminders
+)
 from game_manager import game_manager
 from game_logic import get_build_response, get_card_analysis, get_ai_response
 from data_manager import data_manager
 from formatters import format_card_info, format_character_info, format_meta
-from telegram import Update
+from telegram import Update, ChatMember, ChatMemberUpdated
 from telegram.ext import (
     Application,
     CommandHandler,
     ContextTypes,
     MessageHandler,
+    ChatMemberHandler,
     filters,
 )
 
@@ -86,6 +92,7 @@ Available Commands
 /tierlist
 /news
 /ask <question>
+/reminder [on|off|status|15|30|60]
 """
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -223,6 +230,86 @@ async def math_game(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.bot_data['math_answers'][chat_id] = answer
 
     await update.message.reply_text(f"🧮 MATH CHALLENGE!\nFirst one to answer gets 10 points!\n\n{question}")
+
+async def track_chats(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Tracks the members in the chat."""
+    result = update.chat_member
+    chat_id = result.chat.id
+    user_id = result.from_user.id
+    username = result.from_user.username or result.from_user.first_name
+
+    was_member = result.old_chat_member.status in [
+        ChatMember.MEMBER,
+        ChatMember.OWNER,
+        ChatMember.ADMINISTRATOR,
+    ]
+    is_member = result.new_chat_member.status in [
+        ChatMember.MEMBER,
+        ChatMember.OWNER,
+        ChatMember.ADMINISTRATOR,
+    ]
+
+    if not was_member and is_member:
+        add_chat_member(chat_id, user_id, username)
+        logging.info(f"User {username} joined chat {chat_id}")
+    elif was_member and not is_member:
+        remove_chat_member(chat_id, user_id)
+        logging.info(f"User {username} left chat {chat_id}")
+
+EVENT_SCHEDULE = [
+    # (Day 0=Mon, Hour, Minute, Name) - Using Istanbul GMT+3 times as base
+    (5, 10, 0, "Clan War"),
+    (0, 12, 30, "Inner"), (1, 12, 30, "Inner"), (2, 12, 30, "Inner"), (3, 12, 30, "Inner"), (4, 12, 30, "Inner"), (5, 12, 30, "Inner"), (6, 12, 30, "Inner"),
+    (0, 20, 30, "Inner"), (1, 20, 30, "Inner"), (2, 20, 30, "Inner"), (3, 20, 30, "Inner"), (4, 20, 30, "Inner"), (5, 20, 30, "Inner"), (6, 20, 30, "Inner"),
+    (0, 12, 0, "Top VS"), (1, 12, 0, "Top VS"), (2, 12, 0, "Top VS"), (3, 12, 0, "Top VS"), (4, 12, 0, "Top VS"), (5, 12, 0, "Top VS"), (6, 12, 0, "Top VS"),
+    (0, 20, 0, "Top VS"), (1, 20, 0, "Top VS"), (2, 20, 0, "Top VS"), (3, 20, 0, "Top VS"), (4, 20, 0, "Top VS"), (5, 20, 0, "Top VS"), (6, 20, 0, "Top VS"),
+    (0, 14, 0, "Las Noches"), (1, 14, 0, "Las Noches"), (2, 14, 0, "Las Noches"), (3, 14, 0, "Las Noches"), (4, 14, 0, "Las Noches"), (5, 14, 0, "Las Noches"), (6, 14, 0, "Las Noches"),
+    (0, 16, 0, "Las Noches"), (1, 16, 0, "Las Noches"), (2, 16, 0, "Las Noches"), (3, 16, 0, "Las Noches"), (4, 16, 0, "Las Noches"), (5, 16, 0, "Las Noches"), (6, 16, 0, "Las Noches"),
+    (0, 18, 0, "Las Noches"), (1, 18, 0, "Las Noches"), (2, 18, 0, "Las Noches"), (3, 18, 0, "Las Noches"), (4, 18, 0, "Las Noches"), (5, 18, 0, "Las Noches"), (6, 18, 0, "Las Noches"),
+    (0, 22, 0, "Las Noches"), (1, 22, 0, "Las Noches"), (2, 22, 0, "Las Noches"), (3, 22, 0, "Las Noches"), (4, 22, 0, "Las Noches"), (5, 22, 0, "Las Noches"), (6, 22, 0, "Las Noches"),
+    (0, 23, 0, "Las Noches"), (1, 23, 0, "Las Noches"), (2, 23, 0, "Las Noches"), (3, 23, 0, "Las Noches"), (4, 23, 0, "Las Noches"), (5, 23, 0, "Las Noches"), (6, 23, 0, "Las Noches"),
+]
+
+async def check_events(context: ContextTypes.DEFAULT_TYPE):
+    # Current time in GMT+3 (Istanbul)
+    now = datetime.utcnow() + timedelta(hours=3)
+    current_day = now.weekday()
+
+    chats = get_all_chats_with_reminders()
+    for chat_id, lead_minutes in chats:
+        for event_day, event_hour, event_minute, event_name in EVENT_SCHEDULE:
+            event_time = now.replace(hour=event_hour, minute=event_minute, second=0, microsecond=0)
+
+            # Adjust day if schedule is for another day
+            if event_day != current_day:
+                continue
+
+            reminder_time = event_time - timedelta(minutes=lead_minutes)
+
+            # Check if now is within the minute of reminder_time
+            if now.hour == reminder_time.hour and now.minute == reminder_time.minute:
+                members = get_chat_members(chat_id)
+                if not members:
+                    continue
+
+                mentions = [f"@{m[1]}" for m in members if m[1]]
+
+                # Split mentions into chunks (e.g., 50 per message is safe for most groups)
+                chunk_size = 50
+                for i in range(0, len(mentions), chunk_size):
+                    chunk = mentions[i:i + chunk_size]
+                    msg = ""
+                    if i == 0:
+                        msg = (
+                            f"⏰ EVENT REMINDER\n\n"
+                            f"Only **{lead_minutes} minutes** left until **{event_name}** starts!\n\n"
+                            f"Get your team ready!\n\n"
+                        )
+                    msg += " ".join(chunk)
+                    try:
+                        await context.bot.send_message(chat_id=chat_id, text=msg, parse_mode="Markdown")
+                    except Exception as e:
+                        logging.error(f"Failed to send reminder to {chat_id}: {e}")
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.effective_chat.id
@@ -418,6 +505,38 @@ async def ask_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     response = get_ai_response(query)
     await update.message.reply_text(response, parse_mode="Markdown")
 
+async def reminder_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    chat_id = update.effective_chat.id
+    user_id = update.effective_user.id
+
+    # Administrator check
+    member = await context.bot.get_chat_member(chat_id, user_id)
+    if member.status not in [ChatMember.ADMINISTRATOR, ChatMember.OWNER]:
+        await update.message.reply_text("❌ This command is restricted to administrators.")
+        return
+
+    if not context.args:
+        await update.message.reply_text("Usage: /reminder [on|off|status|15|30|60]")
+        return
+
+    sub = context.args[0].lower()
+    enabled, lead = get_reminder_settings(chat_id)
+
+    if sub == "on":
+        set_reminder_enabled(chat_id, True)
+        await update.message.reply_text("✅ Event reminders enabled.")
+    elif sub == "off":
+        set_reminder_enabled(chat_id, False)
+        await update.message.reply_text("🚫 Event reminders disabled.")
+    elif sub == "status":
+        status_text = "ENABLED" if enabled else "DISABLED"
+        await update.message.reply_text(f"📊 REMINDER STATUS\n\nReminders: {status_text}\nLead Time: {lead} minutes")
+    elif sub in ["15", "30", "60"]:
+        set_reminder_lead(chat_id, int(sub))
+        await update.message.reply_text(f"⏰ Reminder lead time set to {sub} minutes.")
+    else:
+        await update.message.reply_text("❌ Invalid argument. Use on, off, status, or 15/30/60.")
+
 def main():
     if not TOKEN:
         logging.error("BOT_TOKEN bulunamadı! Lütfen environment variable olarak tanımlayın.")
@@ -470,10 +589,18 @@ def main():
     application.add_handler(CommandHandler("news", news_command))
     application.add_handler(CommandHandler("ask", ask_command))
     application.add_handler(CommandHandler("updatedb", update_db_command))
+    application.add_handler(CommandHandler("reminder", reminder_command))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
+    # Member tracking
+    application.add_handler(ChatMemberHandler(track_chats, ChatMemberHandler.CHAT_MEMBER))
+
+    # Scheduler
+    job_queue = application.job_queue
+    job_queue.run_repeating(check_events, interval=60, first=10)
+
     # Botu çalıştırıyoruz (Render gibi platformlar için en ideali polling'dir)
-    application.run_polling()
+    application.run_polling(allowed_updates=[Update.MESSAGE, Update.CHAT_MEMBER, Update.MY_CHAT_MEMBER])
 
 if __name__ == "__main__":
     main()
