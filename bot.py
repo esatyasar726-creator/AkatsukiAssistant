@@ -1,5 +1,6 @@
 import os
 import logging
+from banner_data import BANNERS
 from telegram import Update
 from telegram.ext import (
     Application,
