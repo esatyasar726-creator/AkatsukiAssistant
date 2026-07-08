@@ -12,5 +12,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Botu çalıştıracak komut
-CMD ["python", "main.py"]
+CMD ["python", "bot.py"]
 
