@@ -1,2 +1,5 @@
 python-telegram-bot==21.10
 python-dotenv==1.0.1
+deep-translator==1.11.4
+fuzzywuzzy==0.18.0
+python-Levenshtein==0.25.1
