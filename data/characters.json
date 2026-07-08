@@ -1,0 +1,20 @@
+{
+  "sp_aizen": {
+    "name": "SP Aizen (Final Fusion)",
+    "type": "SP / Attack",
+    "description": "The transcendent being who has surpassed the limits of Shinigami and Hollow.",
+    "skills": ["Hogyoku Surge", "Transcendental Slash", "Fragor"],
+    "talents": ["Godhood", "Immortality", "Domination"],
+    "bonds": {
+      "attack": ["Mugetsu", "Gin", "Tosen"],
+      "hp": ["Momo", "Shinji"],
+      "defense": ["Barragan", "Halibel"]
+    },
+    "gear": ["Hogyoku Fragment", "Soul Society Cloak"],
+    "soul_hall": "Destruction",
+    "soul_box": "Evolutionary Stage 4",
+    "synergies": ["Mugetsu", "SP Shinji"],
+    "counters": ["Characters with high Silence rate"],
+    "history": "Released on Server Day 280 as a special limited SP banner."
+  }
+}

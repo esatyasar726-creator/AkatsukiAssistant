@@ -7,6 +7,8 @@ from banner_data import BANNERS, REFERENCE_DATE, REFERENCE_DAY
 from database import init_db, update_score, get_user_score, get_leaderboard
 from game_manager import game_manager
 from game_logic import get_build_response, get_card_analysis, get_ai_response
+from data_manager import data_manager
+from formatters import format_card_info, format_character_info, format_meta
 from telegram import Update
 from telegram.ext import (
     Application,
@@ -72,6 +74,17 @@ Available Commands
 /quiz
 /build <character>
 /cardinfo <card>
+/character <name>
+/assist <name>
+/guard <name>
+/bonds <character>
+/meta
+/event
+/shop
+/banner
+/compare <c1> vs <c2>
+/tierlist
+/news
 /ask <question>
 """
 
@@ -309,16 +322,93 @@ async def build_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Usage: /build <character name>")
         return
     char_name = " ".join(context.args)
-    response = get_build_response(char_name)
+    char_data = data_manager.find_item("characters", char_name)
+    if char_data:
+        response = format_character_info(char_data) # Builds use char data
+    else:
+        response = get_build_response(char_name)
     await update.message.reply_text(response, parse_mode="Markdown")
 
 async def card_info_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not context.args:
         await update.message.reply_text("Usage: /cardinfo <card name>")
         return
-    card_name = " ".join(context.args)
-    response = get_card_analysis(card_name)
+    query = " ".join(context.args)
+    card_data = data_manager.find_item("cards", query)
+    if card_data:
+        response = format_card_info(card_data)
+    else:
+        response = get_card_analysis(query)
     await update.message.reply_text(response, parse_mode="Markdown")
+
+async def update_db_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # Restrict to admins if possible, but for now simple update
+    await update.message.reply_text("🔄 Updating database from external sources... Please wait.")
+    from data_updater import update_database
+    update_database()
+    data_manager.reload()
+    await update.message.reply_text("✅ Database successfully updated!")
+
+async def character_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not context.args:
+        await update.message.reply_text("Usage: /character <character name>")
+        return
+    query = " ".join(context.args)
+    char_data = data_manager.find_item("characters", query)
+    response = format_character_info(char_data)
+    await update.message.reply_text(response, parse_mode="Markdown")
+
+async def assist_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("Assist character data coming soon! Try /character for now.")
+
+async def guard_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("Guard character data coming soon! Try /character for now.")
+
+async def bonds_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not context.args:
+        await update.message.reply_text("Usage: /bonds <character name>")
+        return
+    query = " ".join(context.args)
+    char_data = data_manager.find_item("characters", query)
+    if char_data:
+        b = char_data['bonds']
+        res = f"🔗 **Bonds for {char_data['name']}:**\n\n"
+        res += f"⚔️ ATK: {', '.join(b['attack'])}\n"
+        res += f"❤️ HP: {', '.join(b['hp'])}\n"
+        res += f"🛡️ DEF: {', '.join(b['defense'])}"
+        await update.message.reply_text(res, parse_mode="Markdown")
+    else:
+        await update.message.reply_text("❌ Character not found.")
+
+async def meta_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    meta_data = data_manager.get_meta()
+    response = format_meta(meta_data)
+    await update.message.reply_text(response, parse_mode="Markdown")
+
+async def event_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    events_data = data_manager.get_events()
+    res = "📅 **EVENTS & ROTATIONS**\n\n"
+    res += f"📰 **News:** {events_data.get('news', 'No current news.')}\n\n"
+    res += f"⚔️ **Weekly:** {', '.join(events_data.get('weekly_events', []))}\n\n"
+    rot = events_data.get('rotation', {})
+    for k, v in rot.items():
+        res += f"🔄 **{k.replace('_', ' ').title()}:** Cycles every {v['cycle']} days. Items: {', '.join(v['items'])}\n"
+    await update.message.reply_text(res, parse_mode="Markdown")
+
+async def shop_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("🛒 Shop rotations and value analysis coming soon!")
+
+async def banner_history_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("📜 Full Banner history analysis coming soon!")
+
+async def compare_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("🆚 Comparison tool coming soon! Use /cardinfo or /character for individual stats.")
+
+async def tierlist_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await meta_command(update, context)
+
+async def news_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await event_command(update, context)
 
 async def ask_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not context.args:
@@ -339,6 +429,16 @@ def main():
     # Bot uygulamasını başlatıyoruz
     application = Application.builder().token(TOKEN).build()
 
+    # Register commands with Telegram for the "/" menu
+    async def set_commands(app):
+        from botfather_helper import COMMANDS
+        from telegram import BotCommand
+        bot_commands = [BotCommand(cmd, desc) for cmd, desc in COMMANDS.items()]
+        await app.bot.set_my_commands(bot_commands)
+
+    # Note: application.post_init can be used to run set_commands
+    application.post_init = set_commands
+
     # Komutları kaydediyoruz
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help_command))
@@ -357,7 +457,19 @@ def main():
     application.add_handler(CommandHandler("quiz", quiz_game))
     application.add_handler(CommandHandler("build", build_command))
     application.add_handler(CommandHandler("cardinfo", card_info_command))
+    application.add_handler(CommandHandler("character", character_command))
+    application.add_handler(CommandHandler("assist", assist_command))
+    application.add_handler(CommandHandler("guard", guard_command))
+    application.add_handler(CommandHandler("bonds", bonds_command))
+    application.add_handler(CommandHandler("meta", meta_command))
+    application.add_handler(CommandHandler("event", event_command))
+    application.add_handler(CommandHandler("shop", shop_command))
+    application.add_handler(CommandHandler("banner", banner_history_command))
+    application.add_handler(CommandHandler("compare", compare_command))
+    application.add_handler(CommandHandler("tierlist", tierlist_command))
+    application.add_handler(CommandHandler("news", news_command))
     application.add_handler(CommandHandler("ask", ask_command))
+    application.add_handler(CommandHandler("updatedb", update_db_command))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
     # Botu çalıştırıyoruz (Render gibi platformlar için en ideali polling'dir)
