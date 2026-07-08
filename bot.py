@@ -15,27 +15,19 @@ logging.basicConfig(
 
 TOKEN = os.getenv("BOT_TOKEN")
 
-
 RULES = """
 📜 AKATSUKI CLAN RULES
 
 1. Respect every member regardless of their language or country.
-
 2. Everyone is free to speak their own language.
-
 3. No insults, hate speech, racism or harassment.
-
 4. No spam, scams or advertising.
-
 5. Participate in clan events whenever possible.
-
 6. Follow instructions from the Leader, Vice Leader and Admins.
-
 7. Help each other and enjoy the game.
 
 ⚔ Respect • Loyalty • Teamwork
 """
-
 
 LEADERS = """
 👑 AKATSUKI STAFF
@@ -50,7 +42,6 @@ Asta
 YurtSever
 """
 
-
 HELP = """
 🤖 Akatsuki Assistant
 
@@ -61,31 +52,21 @@ Available Commands
 /rules
 /leaders
 /banner
-/bannerlist
-/events
-/next
 """
 
-
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "⚔ Welcome to Akatsuki Assistant!\n\nUse /help to see all commands."
-    )
-
+    await update.message.reply_text("⚔ Welcome to Akatsuki Assistant!\n\nUse /help to see all commands.")
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(HELP)
 
-
 async def rules(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(RULES)
-    
-
 
 async def leaders(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(LEADERS)
-    async def banner(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
+async def banner(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if len(context.args) == 1:
         try:
             day = int(context.args[0])
@@ -96,8 +77,28 @@ async def leaders(update: Update, context: ContextTypes.DEFAULT_TYPE):
         day = 15
 
     if day in BANNERS:
-        await update.message.reply_text(
-            f"📅 Banner\n\nDay {day}\n\n{BANNERS[day]}"
-        )
+        await update.message.reply_text(f"📅 Banner\n\nDay {day}\n\n{BANNERS[day]}")
     else:
         await update.message.reply_text("❌ Banner not found.")
+
+def main():
+    if not TOKEN:
+        logging.error("BOT_TOKEN bulunamadı! Lütfen environment variable olarak tanımlayın.")
+        return
+
+    # Bot uygulamasını başlatıyoruz
+    application = Application.builder().token(TOKEN).build()
+
+    # Komutları kaydediyoruz
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("help", help_command))
+    application.add_handler(CommandHandler("rules", rules))
+    application.add_handler(CommandHandler("leaders", leaders))
+    application.add_handler(CommandHandler("banner", banner))
+
+    # Botu çalıştırıyoruz (Render gibi platformlar için en ideali polling'dir)
+    application.run_polling()
+
+if __name__ == "__main__":
+    main()
+    
