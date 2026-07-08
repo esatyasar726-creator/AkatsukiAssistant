@@ -6,6 +6,7 @@ from deep_translator import GoogleTranslator
 from banner_data import BANNERS, REFERENCE_DATE, REFERENCE_DAY
 from database import init_db, update_score, get_user_score, get_leaderboard
 from game_manager import game_manager
+from game_logic import get_build_response, get_card_analysis, get_ai_response
 from telegram import Update
 from telegram.ext import (
     Application,
@@ -69,6 +70,9 @@ Available Commands
 /join
 /emoji
 /quiz
+/build <character>
+/cardinfo <card>
+/ask <question>
 """
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -300,6 +304,30 @@ async def quiz_game(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_text(f"📖 QUIZ TIME!\nFirst to answer correctly gets 20 points!\n\n{question}")
 
+async def build_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not context.args:
+        await update.message.reply_text("Usage: /build <character name>")
+        return
+    char_name = " ".join(context.args)
+    response = get_build_response(char_name)
+    await update.message.reply_text(response, parse_mode="Markdown")
+
+async def card_info_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not context.args:
+        await update.message.reply_text("Usage: /cardinfo <card name>")
+        return
+    card_name = " ".join(context.args)
+    response = get_card_analysis(card_name)
+    await update.message.reply_text(response, parse_mode="Markdown")
+
+async def ask_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not context.args:
+        await update.message.reply_text("Usage: /ask <your question about Bleach Mobile 3D>")
+        return
+    query = " ".join(context.args)
+    response = get_ai_response(query)
+    await update.message.reply_text(response, parse_mode="Markdown")
+
 def main():
     if not TOKEN:
         logging.error("BOT_TOKEN bulunamadı! Lütfen environment variable olarak tanımlayın.")
@@ -327,6 +355,9 @@ def main():
     application.add_handler(CommandHandler("join", join_game))
     application.add_handler(CommandHandler("emoji", emoji_game))
     application.add_handler(CommandHandler("quiz", quiz_game))
+    application.add_handler(CommandHandler("build", build_command))
+    application.add_handler(CommandHandler("cardinfo", card_info_command))
+    application.add_handler(CommandHandler("ask", ask_command))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
     # Botu çalıştırıyoruz (Render gibi platformlar için en ideali polling'dir)
