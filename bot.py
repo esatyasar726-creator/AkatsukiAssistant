@@ -79,7 +79,25 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def rules(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(RULES)
+    
 
 
 async def leaders(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(LEADERS)
+    async def banner(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    if len(context.args) == 1:
+        try:
+            day = int(context.args[0])
+        except ValueError:
+            await update.message.reply_text("Usage: /banner <day>")
+            return
+    else:
+        day = 15
+
+    if day in BANNERS:
+        await update.message.reply_text(
+            f"📅 Banner\n\nDay {day}\n\n{BANNERS[day]}"
+        )
+    else:
+        await update.message.reply_text("❌ Banner not found.")
