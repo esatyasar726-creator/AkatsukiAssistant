@@ -9,7 +9,10 @@ def init_db():
         CREATE TABLE IF NOT EXISTS users (
             user_id INTEGER PRIMARY KEY,
             username TEXT,
-            score INTEGER DEFAULT 0
+            coins INTEGER DEFAULT 0,
+            xp INTEGER DEFAULT 0,
+            level INTEGER DEFAULT 1,
+            win_streak INTEGER DEFAULT 0
         )
     """)
     cursor.execute("""
@@ -30,33 +33,41 @@ def init_db():
     conn.commit()
     conn.close()
 
-def update_score(user_id, username, points):
+def update_user_stats(user_id, username, coins=0, xp=0, win=True):
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
-    cursor.execute("SELECT score FROM users WHERE user_id = ?", (user_id,))
+    cursor.execute("SELECT coins, xp, level, win_streak FROM users WHERE user_id = ?", (user_id,))
     result = cursor.fetchone()
+
     if result:
-        new_score = result[0] + points
-        cursor.execute("UPDATE users SET score = ?, username = ? WHERE user_id = ?", (new_score, username, user_id))
+        c, x, l, s = result
+        new_coins = c + coins
+        new_xp = x + xp
+        new_streak = s + 1 if win else 0
+        # Simple level up logic: Level = sqrt(XP/100) + 1
+        new_level = int((new_xp / 100) ** 0.5) + 1
+        cursor.execute("UPDATE users SET coins = ?, xp = ?, level = ?, win_streak = ?, username = ? WHERE user_id = ?",
+                       (new_coins, new_xp, new_level, new_streak, username, user_id))
     else:
-        cursor.execute("INSERT INTO users (user_id, username, score) VALUES (?, ?, ?)", (user_id, username, points))
-        new_score = points
+        new_level = int((xp / 100) ** 0.5) + 1
+        cursor.execute("INSERT INTO users (user_id, username, coins, xp, level, win_streak) VALUES (?, ?, ?, ?, ?, ?)",
+                       (user_id, username, coins, xp, new_level, 1 if win else 0))
+
     conn.commit()
     conn.close()
-    return new_score
 
-def get_user_score(user_id):
+def get_user_profile(user_id):
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
-    cursor.execute("SELECT score FROM users WHERE user_id = ?", (user_id,))
+    cursor.execute("SELECT username, coins, xp, level, win_streak FROM users WHERE user_id = ?", (user_id,))
     result = cursor.fetchone()
     conn.close()
-    return result[0] if result else 0
+    return result
 
 def get_leaderboard(limit=10):
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
-    cursor.execute("SELECT username, score FROM users ORDER BY score DESC LIMIT ?", (limit,))
+    cursor.execute("SELECT username, coins, level FROM users ORDER BY coins DESC LIMIT ?", (limit,))
     results = cursor.fetchall()
     conn.close()
     return results

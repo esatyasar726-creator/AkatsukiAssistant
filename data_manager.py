@@ -45,15 +45,12 @@ class DataManager:
             return collection[best_match]
         return None
 
-    def get_meta(self):
-        return self.data.get("meta", {})
-
-    def get_events(self):
-        return self.data.get("events", {})
-
     def reload(self):
         self.data = {}
         self.load_all()
+
+    def get_all_keys(self, collection_name):
+        return list(self.get_collection(collection_name).keys())
 
 # Singleton instance
 data_manager = DataManager()
