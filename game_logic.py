@@ -1,4 +1,4 @@
-from fuzzywuzzy import process
+from rapidfuzz import process
 from game_data import CHARACTERS, CARDS, GENERAL_KNOWLEDGE
 from banner_data import REFERENCE_DATE, REFERENCE_DAY
 from datetime import datetime, timedelta
@@ -6,9 +6,11 @@ from datetime import datetime, timedelta
 def find_best_match(query, choices):
     if not query:
         return None
-    best_match, score = process.extractOne(query, choices)
-    if score > 70: # Threshold for fuzzy matching
-        return best_match
+    result = process.extractOne(query, choices)
+    if result:
+        best_match, score, index = result
+        if score > 70: # Threshold for fuzzy matching
+            return best_match
     return None
 
 def get_current_day():
