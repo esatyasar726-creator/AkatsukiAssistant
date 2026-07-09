@@ -1,5 +1,6 @@
 import os
 import logging
+import asyncio
 
 from database import (
     init_db,
@@ -8,7 +9,6 @@ from database import (
 )
 
 from game_manager import game_manager
-from formatters import format_profile
 
 from telegram import Update, BotCommand
 from telegram.ext import (
@@ -30,13 +30,13 @@ TOKEN = os.getenv("BOT_TOKEN")
 
 
 HELP = """
-🤖 AKATSUKI ULTIMATE BOT
+🤖 AKATSUKI BOT
 
 Komutlar:
 
 /start - Botu başlatır
-/help - Yardım menüsü
-/profile - Profil bilgisi
+/help - Yardım
+/profile - Profil
 
 Oyunlar:
 
@@ -48,7 +48,7 @@ Oyunlar:
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "⚔ Akatsuki Ultimate Bot aktif!\n\n/help yazarak komutlara bakabilirsin."
+        "⚔ Akatsuki Bot aktif!\n\n/help yazarak komutları görebilirsin."
     )
 
 
@@ -58,17 +58,17 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def profile_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
-    user_id = update.effective_user.id
-
-    data = get_user_profile(user_id)
+    data = get_user_profile(
+        update.effective_user.id
+    )
 
     if data:
         await update.message.reply_text(
-            format_profile(data)
+            f"👤 Profil:\n\n{data}"
         )
     else:
         await update.message.reply_text(
-            "Henüz profilin yok. Oyun oynayarak başlayabilirsin."
+            "Henüz profil bulunamadı."
         )
 
 
@@ -115,96 +115,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.effective_chat.id
 
 
-    games = [
+    for game, reward in [
         ("trivia",20),
         ("math",10),
-        ("emoji",15)
-    ]
-
-
-    for game,reward in games:
-
-        key = f"{game}_{chat_id}"
-
-        if key in context.bot_data:
-
-            if text == str(context.bot_data[key]).lower():
-
-                update_user_stats(
-                    user.id,
-                    user.username or user.first_name,
-                    coins=reward,
-                    xp=reward*2
-                )
-
-
-                del context.bot_data[key]
-
-
-                await update.message.reply_text(
-                    f"✅ Doğru cevap!\n{reward} coin ve {reward*2} XP kazandın."
-                )
-
-                return
-
-
-
-async def main():
-
-    if not TOKEN:
-        logging.error("BOT_TOKEN bulunamadı!")
-        return
-
-
-    init_db()
-
-
-    async def post_init(application):
-
-        commands = [
-
-            BotCommand("help","Yardım"),
-            BotCommand("profile","Profil"),
-            BotCommand("trivia","Bilgi oyunu"),
-            BotCommand("math","Matematik"),
-            BotCommand("emoji","Emoji oyunu")
-
-        ]
-
-        await application.bot.set_my_commands(commands)
-
-
-
-    app = (
-        Application
-        .builder()
-        .token(TOKEN)
-        .post_init(post_init)
-        .build()
-    )
-
-
-    app.add_handler(CommandHandler("start",start))
-    app.add_handler(CommandHandler("help",help_command))
-    app.add_handler(CommandHandler("profile",profile_command))
-
-    app.add_handler(CommandHandler("trivia",trivia_command))
-    app.add_handler(CommandHandler("math",math_command))
-    app.add_handler(CommandHandler("emoji",emoji_command))
-
-
-    app.add_handler(
-        MessageHandler(
-            filters.TEXT & ~filters.COMMAND,
-            handle_message
-        )
-    )
-
-
-    app.run_polling()
-
-
-
-if __name__ == "__main__":
-    import asyncio
-    asyncio.run(main())
+        ("emoji",
