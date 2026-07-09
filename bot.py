@@ -185,3 +185,27 @@ def translate_command(message):
             message,
             "Translation failed."
         )
+
+
+@bot.message_handler(commands=["admin"])
+def admin(message):
+    username = message.from_user.first_name
+
+    if not is_admin(username):
+        bot.reply_to(
+            message,
+            "❌ You are not authorized."
+        )
+        return
+
+    bot.reply_to(
+        message,
+        """🛡 AKATSUKI ADMIN PANEL
+
+Available:
+
+/announce - Send announcement
+/resetleaderboard - Reset leaderboard"""
+    )
+
+
