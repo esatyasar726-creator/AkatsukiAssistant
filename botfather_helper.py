@@ -14,18 +14,10 @@ COMMANDS = {
     "join": "Join active dice game",
     "emoji": "Start emoji guess game",
     "quiz": "Start trivia quiz",
-    "cardinfo": "Expert card analysis",
-    "character": "Detailed character info",
-    "assist": "Assist character analysis",
-    "guard": "Guard character analysis",
-    "bonds": "View character bonds",
     "meta": "Current PvP/PvE meta",
     "event": "Events and rotations",
     "shop": "Shop value analysis",
     "bannerhistory": "Past banner release history",
-    "compare": "Compare two characters/cards",
-    "tierlist": "Character tier list",
-    "news": "Latest game news",
     "ask": "Ask AI about the game"
 }
 
