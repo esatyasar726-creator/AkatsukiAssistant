@@ -1,121 +1,191 @@
 import os
 import logging
-import asyncio
-
-from database import (
-    init_db,
-    update_user_stats,
-    get_user_profile
-)
-
-from game_manager import game_manager
+import random
 
 from telegram import Update, BotCommand
 from telegram.ext import (
     Application,
     CommandHandler,
-    MessageHandler,
-    ContextTypes,
-    filters
+    ContextTypes
 )
-
 
 logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     level=logging.INFO
 )
-
 
 TOKEN = os.getenv("BOT_TOKEN")
 
 
-HELP = """
-🤖 AKATSUKI BOT
-
-Komutlar:
-
-/start - Botu başlatır
-/help - Yardım
-/profile - Profil
-
-Oyunlar:
-
-/trivia - Bilgi yarışması
-/math - Matematik oyunu
-/emoji - Emoji tahmini
-"""
+users = {}
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user = update.effective_user
+
+    users[user.id] = {
+        "name": user.first_name,
+        "xp": 0,
+        "coin": 0
+    }
+
     await update.message.reply_text(
-        "⚔ Akatsuki Bot aktif!\n\n/help yazarak komutları görebilirsin."
+        f"⚔ Hoş geldin {user.first_name}!\n\n/help yazarak komutları görebilirsin."
     )
 
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(HELP)
-
-
-async def profile_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
-    data = get_user_profile(
-        update.effective_user.id
-    )
-
-    if data:
-        await update.message.reply_text(
-            f"👤 Profil:\n\n{data}"
-        )
-    else:
-        await update.message.reply_text(
-            "Henüz profil bulunamadı."
-        )
-
-
-async def trivia_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
-    q, a = game_manager.start_trivia()
-
-    context.bot_data[f"trivia_{update.effective_chat.id}"] = a
 
     await update.message.reply_text(
-        f"📚 TRIVIA\n\n{q}"
+        """
+🤖 AKATSUKI BOT
+
+Komutlar:
+
+/start - Başlat
+/profile - Profil
+/math - Matematik oyunu
+/trivia - Bilgi sorusu
+"""
     )
 
 
-async def math_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
-    q, a = game_manager.start_math_challenge()
+    user = update.effective_user
 
-    context.bot_data[f"math_{update.effective_chat.id}"] = a
+    if user.id not in users:
+        users[user.id] = {
+            "name": user.first_name,
+            "xp": 0,
+            "coin": 0
+        }
+
+    data = users[user.id]
 
     await update.message.reply_text(
-        f"🧮 MATH\n\n{q}"
+        f"""
+👤 Profil
+
+İsim: {data['name']}
+⭐ XP: {data['xp']}
+💰 Coin: {data['coin']}
+"""
     )
 
 
-async def emoji_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def math_game(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
-    e, a = game_manager.start_emoji_guess()
+    a = random.randint(1,20)
+    b = random.randint(1,20)
 
-    context.bot_data[f"emoji_{update.effective_chat.id}"] = a
+    answer = a + b
+
+    context.chat_data["math_answer"] = answer
 
     await update.message.reply_text(
-        f"🧩 EMOJI\n\n{e}"
+        f"🧮 {a} + {b} = ?"
     )
 
 
-async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def trivia(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
-    if not update.message or not update.message.text:
-        return
+    questions = [
+        ("Türkiye'nin başkenti?", "ankara"),
+        ("Bleach ana karakteri?", "ichigo"),
+        ("2+2 kaç?", "4")
+    ]
+
+    q,a = random.choice(questions)
+
+    context.chat_data["trivia_answer"] = a
+
+    await update.message.reply_text(
+        f"📚 {q}"
+    )
+
+
+async def answer_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text = update.message.text.lower().strip()
-    user = update.effective_user
-    chat_id = update.effective_chat.id
+
+    answer = None
+
+    if "math_answer" in context.chat_data:
+        answer = str(context.chat_data["math_answer"])
+
+    if "trivia_answer" in context.chat_data:
+        answer = context.chat_data["trivia_answer"]
 
 
-    for game, reward in [
-        ("trivia",20),
-        ("math",10),
-        ("emoji",
+    if answer and text == answer:
+
+        user = update.effective_user
+
+        if user.id not in users:
+            users[user.id] = {
+                "name": user.first_name,
+                "xp": 0,
+                "coin": 0
+            }
+
+        users[user.id]["xp"] += 10
+        users[user.id]["coin"] += 5
+
+
+        await update.message.reply_text(
+            "✅ Doğru cevap!\n+10 XP\n+5 Coin"
+        )
+
+        context.chat_data.clear()
+
+
+
+async def post_init(app):
+
+    await app.bot.set_my_commands(
+        [
+            BotCommand("start","Başlat"),
+            BotCommand("help","Yardım"),
+            BotCommand("profile","Profil"),
+            BotCommand("math","Matematik"),
+            BotCommand("trivia","Bilgi")
+        ]
+    )
+
+
+
+def main():
+
+    if not TOKEN:
+        print("BOT_TOKEN yok!")
+        return
+
+
+    app = (
+        Application
+        .builder()
+        .token(TOKEN)
+        .post_init(post_init)
+        .build()
+    )
+
+
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("help", help_command))
+    app.add_handler(CommandHandler("profile", profile))
+
+    app.add_handler(CommandHandler("math", math_game))
+    app.add_handler(CommandHandler("trivia", trivia))
+
+
+    from telegram.ext import MessageHandler, filters
+
+    app.add_handler(
+        MessageHandler(
+            filters.TEXT & ~filters.COMMAND,
+            answer_handler
+        )
+    )
+
+
+    app.run
