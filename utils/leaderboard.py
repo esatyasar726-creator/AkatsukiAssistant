@@ -45,3 +45,13 @@ def get_top():
     )
 
     return ranking[:10]
+
+
+def get_score(user_id):
+    data = load_scores()
+    uid = str(user_id)
+
+    if uid not in data:
+        return 0
+
+    return data[uid]["score"]
