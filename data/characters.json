@@ -1,20 +1,1872 @@
 {
-  "sp_aizen": {
-    "name": "SP Aizen (Final Fusion)",
-    "type": "SP / Attack",
-    "description": "The transcendent being who has surpassed the limits of Shinigami and Hollow.",
-    "skills": ["Hogyoku Surge", "Transcendental Slash", "Fragor"],
-    "talents": ["Godhood", "Immortality", "Domination"],
-    "bonds": {
-      "attack": ["Mugetsu", "Gin", "Tosen"],
-      "hp": ["Momo", "Shinji"],
-      "defense": ["Barragan", "Halibel"]
+  "resurrection_barragan_bara_v2": {
+    "id": "resurrection_barragan_bara_v2",
+    "name": "Resurrection Barragan (Bara v2)",
+    "type": "1k RG",
+    "talent_color": "FINAL",
+    "description": "A powerful character of type 1k RG with FINAL talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nAGI class",
+      "Rank 9: 15% Final DMG Reduction during skill\nHP Shield (10%) every 8 sec",
+      "Rank 13: 20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nchance Sleep\nATK up (15%)\nArmor up (20%)",
+        "s2": "420% DMG\nhigh chance Seal\nHP Shield (10%)\nLifesteal",
+        "s3_weapon": "450% DMG\nInvincible during skill\nImmune Silence\nInvulnerability Buff"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nhigh chance Sleep\nATK up (15%)\nArmor up (20%)",
+        "s2": "570% DMG\nSeal\nHP Shield (10%)\nLifesteal",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, Immune Silence, Invulnerability Buff",
+      "Guard": "Crit DMG up, Dispel self Debuff"
     },
-    "gear": ["Hogyoku Fragment", "Soul Society Cloak"],
-    "soul_hall": "Destruction",
-    "soul_box": "Evolutionary Stage 4",
-    "synergies": ["Mugetsu", "SP Shinji"],
-    "counters": ["Characters with high Silence rate"],
-    "history": "Released on Server Day 280 as a special limited SP banner."
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "coco_byakuya_kuchiki": {
+    "id": "coco_byakuya_kuchiki",
+    "name": "Coco Byakuya Kuchiki",
+    "type": "1k RG",
+    "talent_color": "GREAT",
+    "description": "A powerful character of type 1k RG with GREAT talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSTR class",
+      "Rank 9: 20% more DMG to Stunned",
+      "Rank 13: 20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nhigh chance Stun\nundispellable Armor up (30%)\nLifesteal",
+        "s2": "420% DMG\nhigh chance Blind\nATK up (15%)\nHP Shield (10%)",
+        "s3_weapon": "450% DMG\nundispellable Curse\nCrit up (30%)\nInvulnerability Buff"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nStun\nundispellable Armor up (30%)\nLifesteal",
+        "s2": "570% DMG\nBlind\nATK up (15%)\nHP Shield (10%)",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, high chance Stun, Curse, undispellable Armor up (30%)",
+      "Guard": "Armor up (30%)"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "demon_byakuya_kuchiki": {
+    "id": "demon_byakuya_kuchiki",
+    "name": "Demon Byakuya Kuchiki",
+    "type": "2k RG",
+    "talent_color": "GREAT",
+    "description": "A powerful character of type 2k RG with GREAT talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSTR class",
+      "Rank 9: Invulnerable & 15% DMG Reduction during skill",
+      "Rank 13: 20% Final DMG",
+      "Rank 4-8-12: BT 15",
+      "Rank 9: +20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nhigh chance Freeze\nundispellable ATK up (30%)\nLifesteal",
+        "s2": "420% DMG\nBlur (40%)\nCrit up (30%)\nCrit DMG up (30%)\ncut Armor (-20%)",
+        "s3_weapon": "450% DMG\nchance undispellable Invincible \nInvulnerability Buff\nDispel enemy's Buff\nLifesteal"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nFreeze\nundispellable ATK up (30%)\nLifesteal\ncan cast 2x",
+        "s2": "570% DMG\nBlur (40%)\nCrit up (30%)\nCrit DMG up (30%)\ncut Armor (-20%)",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, high chance Freeze, Dispel enemy's Buff",
+      "Guard": "Crit up, Dispel enemy's Buff"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "sp_byakuya_kuchiki": {
+    "id": "sp_byakuya_kuchiki",
+    "name": "SP Byakuya Kuchiki",
+    "type": "2k RG",
+    "talent_color": "GREAT",
+    "description": "A powerful character of type 2k RG with GREAT talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSTR class",
+      "Rank 9: Immune Prevent Regen\nNormal ATK trigger undispellable ATK Up (30%)\nEvery 10% HP lost, reduce 1% ATK",
+      "Rank 13: 20% Final DMG",
+      "Rank 4-8-12: BT 15",
+      "Rank 9: +20% Final DMG Reduction from Male character"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nhigh chance Stun\nincrease Rage (25%)\nundispellable HP Regen\nHP Shield (10%)\nDMG Reduction (30%)",
+        "s2": "420% DMG\nhigh chance undispellable Constraint\nundispellable ATK up (20%)\nControl Immunity Effect",
+        "s3_weapon": "450% DMG\nInvincible during skill\nguaranteed Crit\nDispel enemy's Buff\nLifesteal\nundispellable Additional ATK (3% HP/100% ATK)"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nStun\nincrease Stun Mastery (30%)\nundispellable HP Regen\nTenacity Effect\nHP Shield (10%)\nDMG Reduction (30%)\ncan cast 2x",
+        "s2": "570% DMG\nundispellable Constraint\nundispellable ATK up (20%)\nLifesteal\nControl Immunity Effect",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, Stun, undispellable HP Regen, Dispel enemy's Buff",
+      "Guard": "undispellable Constraint"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "demon_fox_gin_ichimaru_fox_gin": {
+    "id": "demon_fox_gin_ichimaru_fox_gin",
+    "name": "Demon Fox Gin Ichimaru (Fox Gin)",
+    "type": "1k RG",
+    "talent_color": "UNIQUE",
+    "description": "A powerful character of type 1k RG with UNIQUE talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSKILL class",
+      "Rank 9: Immune Stun",
+      "Rank 13: 20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nchance Silence\nhigh chance Slow (70%)\n25% Final DMG Reduction",
+        "s2": "420% DMG\nhigh chance Sleep\nATK up (15%)\nLifesteal",
+        "s3_weapon": "450% DMG\nundispellable Additional DMG (2% HP/60% ATK)\nDispel self Debuff"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nhigh chance Silence\nSlow\n25% DMG Reduction",
+        "s2": "570% DMG\nSleep\nATK up (15%)\nLifesteal",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, high chance Sleep, Dispel self Debuff",
+      "Guard": "ATK up, Dispel self Debuff"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "coco_gin_ichimaru": {
+    "id": "coco_gin_ichimaru",
+    "name": "Coco Gin Ichimaru",
+    "type": "1k RG",
+    "talent_color": "UNIQUE",
+    "description": "A powerful character of type 1k RG with UNIQUE talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSKILL class",
+      "Rank 9: Immune Silence",
+      "Rank 13: 20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nhigh chance Blur (40%)\nATK up (15%)\nLifesteal",
+        "s2": "420% DMG\nhigh chance Constraint\nCrit up (30%)\nHP Shield (10%)",
+        "s3_weapon": "450% DMG\nhigh chance DisArmor\nMovement SPD up (40%)\nundispellable Invulnerability Buff\nImmune Trap & Constraint"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nBlur (40%)\nATK up (15%)\nLifesteal",
+        "s2": "570% DMG\nConstraint\nCrit up (30%)\nHP Shield (10%)",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, Blur, Movement SPD up (20%), undispellable Invulnerability Buff",
+      "Guard": "Crit up"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "halloween_gin_ichimaru_halo_gin": {
+    "id": "halloween_gin_ichimaru_halo_gin",
+    "name": "Halloween Gin Ichimaru (Halo Gin)",
+    "type": "1k RG",
+    "talent_color": "GREAT",
+    "description": "A powerful character of type 1k RG with GREAT talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSTR class",
+      "Rank 9: 20% more DMG to Burned",
+      "Rank 13: 20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nhigh chance Blind\nCrit up (30%)\nCrit DMG up (30%)",
+        "s2": "420% DMG\nhigh chance Chaos\nHP Shield (10%)\nAOE ATK up (15%)",
+        "s3_weapon": "450% DMG\nSilence\nundispellable Burn\nLifesteal"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nBlind\nCrit up (30%)\nCrit DMG up (30%)",
+        "s2": "560% DMG\nChaos\nHP Shield (10%)\nAOE ATK up (15%)",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, undispellable Constraint, high chance undispellable Burn, cut Armor (-50%)",
+      "Guard": "undispellable Constraint"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "ao_oni_grimmjow_oni_grimm": {
+    "id": "ao_oni_grimmjow_oni_grimm",
+    "name": "Ao Oni Grimmjow (Oni Grimm)",
+    "type": "1k RG",
+    "talent_color": "UNIQUE",
+    "description": "A powerful character of type 1k RG with UNIQUE talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSKILL class",
+      "Rank 9: Immune to sleep",
+      "Rank 13: 20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nhigh chance Sleep\nATK up (15%)\nLifesteal",
+        "s2": "420% DMG\nhigh chance Trap\nArmor up (30%)\nHP Shield (10%)",
+        "s3_weapon": "450% DMG\nDodge up (50%)\nCrit up (30%)"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nSleep\nATK up (15%)\nLifesteal",
+        "s2": "570% DMG\nTrap\nArmor up (30%)\nHP Shield (10%)",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, Dodge up (50%), Crit up (30%)",
+      "Guard": "Curse"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "halloween_grimmjow_halo_grimm": {
+    "id": "halloween_grimmjow_halo_grimm",
+    "name": "Halloween Grimmjow (Halo Grimm)",
+    "type": "1k RG",
+    "talent_color": "GREAT",
+    "description": "A powerful character of type 1k RG with GREAT talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSTR class",
+      "Rank 9: 15% Final DMG Reduction during skill",
+      "Rank 13: 20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nhigh chance Sleep\nControl Immunity Buff\nLifesteal",
+        "s2": "420% DMG\nhigh chance Blur (20%)\u200b\nArmor up (30%)\nHP Shield (10%)",
+        "s3_weapon": "450% DMG\nundispellable Constraint\nATK up (20%)"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nSleep\nControl Immunity Buff\nLifesteal",
+        "s2": "570% DMG\nBlur (20%)\u200b\r\nArmor up (30%)\r\nHP Shield (10%)",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, Control Immunity Buff, undispellable Constraints",
+      "Guard": "Control Immunity Buff"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "coco_grimmjow": {
+    "id": "coco_grimmjow",
+    "name": "Coco Grimmjow",
+    "type": "2.5k RG",
+    "talent_color": "UNIQUE",
+    "description": "A powerful character of type 2.5k RG with UNIQUE talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSKILL class",
+      "Rank 9: Weapon skill deals more DMG to Bleeding enemies by 100%;\nWhen HP below 66%, undispellable ATK up (36%), undispellable Armor up (66%), gets undispellable DMG up (36%) and DMG reduction (66%), cooldown 15 sec",
+      "Rank 13: 20% Final DMG",
+      "Rank 4-8-12: BT 15",
+      "Rank 9: Weapon Skill : Add undispellable (-20%, 10 sec) Cut Armor and has a chance to Stun"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nhigh chance undispellable Chaos\nundispellable ATK up (36%)\nadd Rage\nLifesteal",
+        "s2": "420% DMG\nhigh chance undispellable Silence\nhigh chance undispellable Constraint\nInvincible Buff (3 sec)\nundispellable HP Shield\nundispellable Tenacity effect",
+        "s3_weapon": "466% DMG\nguaranteed Crit\nDispel enemy's Buff\nundispellable Bleed\nundispellable cut Armor (-36%)\nundispellable ATK Armor up (36%)"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nundispellable Chaos\nundispellable ATK up (36%)\nundispellable Additional ATK (3% HP/106% ATK)\nLifesteal\nCan cast 2x",
+        "s2": "570% DMG\nundispellable Silence\nundispellable Constraint\nInvincible Buff (3 sec)\nundispellable HP Shield\nundispellable Tenacity effect\nCan cast 2x",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, undispellable cut Armor (-50%), undispellable Silence, undispellable Constraint, Dispel enemy's Buff, undispellable Immune Debuff effect (not cc immune, neither tenacity)",
+      "Guard": "undispellable Immune Effect, undispellable ATK up"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "paper_umbrella_halibel_parasol_halibel": {
+    "id": "paper_umbrella_halibel_parasol_halibel",
+    "name": "Paper Umbrella Halibel (Parasol Halibel)",
+    "type": "1k RG",
+    "talent_color": "GREAT",
+    "description": "A powerful character of type 1k RG with GREAT talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSTR class",
+      "Rank 9: 15% Final DMG Reduction during skill",
+      "Rank 13: 20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nundispellable Slow (75%)\nHP Shield (10%)\nLifesteal",
+        "s2": "420% DMG\nhigh chance undispellable Blind\nATK up (15%)\nCrit up (30%)\nCrit DMG up (30%)",
+        "s3_weapon": "450% DMG\nCrit Resist up (30%)\nundispellable Tenacity \nhigh chance undispellable Chaos"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nundispellable Slow (75%)\nHP Shield (10%)\nLifesteal",
+        "s2": "570% DMG\nundispellable Blind\nATK up (15%)\nCrit up (30%)\nCrit DMG up (30%)",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, Crit Resist up (30%), Control Immunity Buff",
+      "Guard": "Crit Resist up"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "hollowfication_hollow_ichigo_wvl": {
+    "id": "hollowfication_hollow_ichigo_wvl",
+    "name": "Hollowfication Hollow Ichigo (WVL)",
+    "type": "1k RG",
+    "talent_color": "UNIQUE",
+    "description": "A powerful character of type 1k RG with UNIQUE talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSKILL class",
+      "Rank 9: 20% more DMG to Female",
+      "Rank 13: 20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nhigh chance Stun\nATK up (20%)\nHP Shield (10%)",
+        "s2": "420% DMG\nhigh chance Chaos\nLifesteal",
+        "s3_weapon": "450% DMG\nTenacity\nPrevents Heal"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nStun\nATK up (20%)\nHP Shield (10%)",
+        "s2": "570% DMG\nChaos\nLifesteal",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, Prevents Heal, high chance Stun",
+      "Guard": "Tenacity, Prevents Heal"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "coco___hollow_ichigo_coco_wi": {
+    "id": "coco___hollow_ichigo_coco_wi",
+    "name": "Coco - Hollow Ichigo (Coco WI)",
+    "type": "1k RG",
+    "talent_color": "UNIQUE",
+    "description": "A powerful character of type 1k RG with UNIQUE talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSKILL class",
+      "Rank 9: 20% more DMG to Constrained",
+      "Rank 13: 20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nhigh chance Stun\nATK up (15%)\nHP Shield (10%)",
+        "s2": "420% DMG\nhigh chance Chaos\nCrit up (20%)\nCrit DMG up (20%)\nLifesteal",
+        "s3_weapon": "450% DMG\nMovement SPD up (40%)\nundispellable Additional ATK (2% HP/60% ATK)\nundispellable Immune Trap & Constraint\nchance undispellable Constraint"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nStun\r\nATK up (15%)\r\nHP Shield (10%)",
+        "s2": "570% DMG\nChaos\nCrit up (20%)\nCrit DMG up (20%)\nLifesteal",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, Crit up (20%). Crit DMG up (20%)",
+      "Guard": "Crit DMG up (20%)"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "demon___hollow_ichigo_demon_wi": {
+    "id": "demon___hollow_ichigo_demon_wi",
+    "name": "Demon - Hollow Ichigo (Demon WI)",
+    "type": "2k RG",
+    "talent_color": "GREAT",
+    "description": "A powerful character of type 2k RG with GREAT talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSTR class",
+      "Rank 9: Normal atk and skills have chance to Poison (undispellable), Bleed (undispellable), Prevents Heal (undispellable), Blind, Weaken (30%), Chaos\nATK up (20%) after skill",
+      "Rank 13: 20% Final DMG",
+      "Rank 4-8-12: BT 15",
+      "Rank 9: +30% extra DMG against Bleeding, Poisoned, and Burned enemy"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nhigh chance undispellable Silence\nHP Shield (10%)\nLifesteal",
+        "s2": "420% DMG\nhigh chance Stun\nundispellable Tenacity\ncan cast 2x",
+        "s3_weapon": "450% DMG\nCrit up (30%)  \nCrit DMG up (30%)\nundispellable Armor up (30%)\n(100% more DMG to enemy with Tenacity)"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nundispellable Silence\nHP Shield (10%)\nLifesteal",
+        "s2": "570% DMG\nStun\nInvincible during Skill\nundispellable Tenacity\nDispel enemy's Buff",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, undispellable Silence, Dispel enemy's Buff",
+      "Guard": "Tenacity, Crit up (30%), Crit DMG up (30%)"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "hollowfication___ichigo_kurosaki_vl": {
+    "id": "hollowfication___ichigo_kurosaki_vl",
+    "name": "Hollowfication - Ichigo Kurosaki (VL)",
+    "type": "1k RG",
+    "talent_color": "GREAT",
+    "description": "A powerful character of type 1k RG with GREAT talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSTR class",
+      "Rank 9: Every attack, Lifesteal 15%",
+      "Rank 13: 20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "402% DMG\nCrit up (30%)\nhigh chance Stun",
+        "s2": "393% DMG\nHP Shield (10%)\nchance Trap",
+        "s3_weapon": "422% DMG\nATK up (15%)\nInvincible Buff"
+      },
+      "After Liberation": {
+        "s1": "557% DMG\nCrit up (30%)\nStun",
+        "s2": "550% DMG\nHP Shield (10%)\nchance Trap.",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, Crit up (30%), high chance Stun",
+      "Guard": "Invincible Buff"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "merged_zangetsu___ichigo_kurosaki_mugetsu": {
+    "id": "merged_zangetsu___ichigo_kurosaki_mugetsu",
+    "name": "Merged Zangetsu - Ichigo Kurosaki (Mugetsu)",
+    "type": "2k RG",
+    "talent_color": "FINAL",
+    "description": "A powerful character of type 2k RG with FINAL talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nAGI class",
+      "Rank 9: Invulnerable and 10% DMG Reduction during skill",
+      "Rank 13: 20% Final DMG",
+      "Rank 4-8-12: BT 15",
+      "Rank 9: Weapon Skill : Add undispellable (20%, 10 sec) Cut Armor and has a chance to Stun"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nHP Shield (10%)\nLifesteal\nhigh chance Constraint",
+        "s2": "420% DMG\nATK up (15%)\nArmor up (20%)\nhigh chance Stun",
+        "s3_weapon": "400% DMG\nguaranteed Crit\nLifesteal\nDispel enemy's Buff"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nHP Shield (10%)\nLifesteal\nConstraint",
+        "s2": "570% DMG\nATK up (15%) \nArmor up (20%)\nStun",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, cut Armor (-40%), high chance Stun",
+      "Guard": "cut Armor (-25%), Constraint"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "sp1___ichigo_kurosaki_sp1": {
+    "id": "sp1___ichigo_kurosaki_sp1",
+    "name": "SP1 - Ichigo Kurosaki (SP1)",
+    "type": "2k RG",
+    "talent_color": "FINAL",
+    "description": "A powerful character of type 2k RG with FINAL talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nAGI class",
+      "Rank 9: every 4% HP lost, increase 1% ATK and 4% Crit\nWhen HP is below 50%, fully recover rage bar and gets undispellable Invincible Buff (triggered every 60s)",
+      "Rank 13: 20% Final DMG",
+      "Rank 4-8-12: BT 15",
+      "Rank 9: Weapon Skill : Add undispellable (20%, 10 sec) Cut Armor and has a chance to Stun"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nhigh chance Sleep\nundispellable Prevent Heal\nInvulnerable Buff",
+        "s2": "420% DMG\nATK up (20%)\nHP Shield (10%)\nLifesteal",
+        "s3_weapon": "450% DMG\nguaranteed Crit\nDispel enemy's Buff"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nSleep\nundispellable Prevent Heal\nInvulnerable Buff",
+        "s2": "570% DMG\nATK up (20%)\nHP Shield (10%)\nLifesteal",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, ATK up (20%), high chance Sleep",
+      "Guard": "undispellable Invincible Buff"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "desert_ichigo": {
+    "id": "desert_ichigo",
+    "name": "Desert Ichigo",
+    "type": "1k RG",
+    "talent_color": "FINAL",
+    "description": "A powerful character of type 1k RG with FINAL talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nAGI class",
+      "Rank 9: Immune Freeze\n60% more DMG to Burned\n15% DMG Reduction during skill",
+      "Rank 13: 20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nhigh chance Stun\nBlind\nATK up (20%)",
+        "s2": "420% DMG\nhigh chance Silence\nLifesteal\nHP Shield (10%)",
+        "s3_weapon": "450% DMG\nundispellable Armor up (30%)\nHP Regeneration\nundispellable Burn"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nStun\nHeal\nDispel self Debuff\nATK up (20%)",
+        "s2": "570% DMG\nSilence\nLifesteal\nHP Shield (10%)",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, undispellable Armor up (30%), undispellable Burn",
+      "Guard": "high chance Stun, undispellable Burn"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "demon_ichigo": {
+    "id": "demon_ichigo",
+    "name": "Demon Ichigo",
+    "type": "2k RG",
+    "talent_color": "GREAT",
+    "description": "A powerful character of type 2k RG with GREAT talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSTR class",
+      "Rank 9: Immune Curse\nundispellable ATK aura (20%), Crit aura (50%), Final DMG aura (20%)\nundispellable cut Armor aura (-25%)",
+      "Rank 13: 20% Final DMG",
+      "Rank 4-8-12: BT 15",
+      "Rank 9: +20% Final DMG Reduction from Male character"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nhigh chance Stun\nhigh chance Blur (60%)\nATK up (20%)\nArmor up (30%)\nHP Shield (10%)\nSummon Whirlwind (can knockback nearby enemy)",
+        "s2": "420% DMG\nundispellable cut ATK Armor (-25%)\nundispellable Burn\nreduce enemy's Rage\nLifesteal\ncan Cast 2x",
+        "s3_weapon": "450% DMG\nDispel enemy's Buff\nundispellable Slow (90%)\nundispellable Chaos\nundispellable DMG Reflect (80%)\nundispellable Debuff Reflection\nundispellable Additional DMG (3% HP/100% ATK)"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nStun\nBlur (60%)\nATK up (20%)\r\nArmor up (30%)\nHP Shield (10%)\nSummon Whirlwind (can knockback nearby enemy)",
+        "s2": "570% DMG\nundispellable DMG up (30%)\nundispellable DMG Reduction (80%)\nundispellable cut ATK Armor (-25%)\nundispellable Burn\nreduce enemy's Rage\nLifesteal",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, Stun, Dispel self Debuff, undispellable DMG Reflect (80%)",
+      "Guard": "undispellable Tenacity, undispellable Chaos"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "sp2___ichigo_kurosaki": {
+    "id": "sp2___ichigo_kurosaki",
+    "name": "SP2 - Ichigo Kurosaki",
+    "type": "2.5k RG",
+    "talent_color": "FINAL",
+    "description": "A powerful character of type 2.5k RG with FINAL talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nAGI class",
+      "Rank 9: Normal ATK: guaranteed Crit and Burn, has chance to Stun the enemy;\nWeapon skill deals more DMG to Sealed enemies by 100%;\nevery 3% HP lost, increase 1% ATK and 4% Crit;\nWhen HP is below 50%, gets undispellable Invincible effect and undispellable ATK  (triggered every 60s)",
+      "Rank 13: 20% Final DMG",
+      "Rank 4-8-12: BT 15",
+      "Rank 9: +30% Final DMG Reduction from Male character"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nhigh chance Stun\nundispellable Prevent Regen\nundispellable Vulnerable (New Debuff : increase Final DMG taken +50%) \nundispellable ATK up (30%)\nundispellable Armor up (30%)\nHP Shield (10%)\nInvincible during Skill \ncan Cast 2x",
+        "s2": "420% DMG\nhigh chance Constraint\nDispel enemy's Buff\nundispellable cut ATK Armor (30%)\nundispellable Burn\nundispellable Tenacity effect\nundispellable DMG Reduction (30%)\nundispellable Movement SPD up (40%)\nundispellable HP Regen",
+        "s3_weapon": "450% DMG\nguaranteed Crit\nDispel enemy's Buff\nundispellable Curse\nLifesteal\nundispellable ATK up (30%)\nSeal Aura : undispellable Prevent Regen and undispellable Seal"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nundispellable Stun\nundispellable Burn\nundispellable Prevent Regen\nundispellable Vulnerable\nundispellable ATK up (30%)\nundispellable Armor up (30%)\nHP Shield (10%)",
+        "s2": "570% DMG\nConstraint\nDispel enemy's Buff\nundispellable cut ATK Armor\nundispellable Burn\nundispellable Tenacity effect\nundispellable DMG Reduction (30%)\nundispellable Movement SPD up (40%)\nundispellable HP Regen\ncan Cast 2x",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, Stun, undispellable Curse, undispellable Prevent Regen, undispellable Tenacity",
+      "Guard": "undispellable Invincible effect, undispellable ATK Armor up"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "demon___kaien_shiba": {
+    "id": "demon___kaien_shiba",
+    "name": "Demon - Kaien Shiba",
+    "type": "2k RG",
+    "talent_color": "FINAL",
+    "description": "A powerful character of type 2k RG with FINAL talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nAGI class",
+      "Rank 9: 15% Final DMG Reduction during skill",
+      "Rank 13: 20% Final DMG",
+      "Rank 4-8-12: BT 15",
+      "Rank 9: +20% Final DMG Reduction from Male character"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nATK up (15%) \nArmor up (30%)\nhigh chance Stun",
+        "s2": "420% DMG\nHP Shield (10%)\nLifesteal\nhigh chance Silence",
+        "s3_weapon": "450% DMG\nundispellable Crit up (30%)\nundispellable Crit DMG (30%)\nDMG reflect effect (40%)\nDispel enemy's Buff"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nATK up (15%)\nArmor up (30%)\nStun",
+        "s2": "570% DMG\nHP Shield (10%)\nLifesteal \nSilence",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, Crit up (30%), Crit DMG up (30%), high chance Stun",
+      "Guard": "Crit up (30%)"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "full_force___kenpachi_zaraki_ff_ken": {
+    "id": "full_force___kenpachi_zaraki_ff_ken",
+    "name": "Full Force - Kenpachi Zaraki (FF Ken)",
+    "type": "2k RG",
+    "talent_color": "FINAL",
+    "description": "A powerful character of type 2k RG with FINAL talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nAGI class",
+      "Rank 9: Can't get DeBuff during skill\nEvery 4% of HP loss, increases 1% ATK",
+      "Rank 13: 20% Final DMG",
+      "Rank 4-8-12: BT 15",
+      "Rank 9: +20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nATK up (15%)\nArmor up (20%)\nchance Sleep",
+        "s2": "420% DMG\nHP Shield (10%)\nLifesteal\nhigh chance Seal",
+        "s3_weapon": "450% DMG\nInvincible during skill\nCurse"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nATK up (15%)\nArmor up (20%)\nhigh chance Sleep",
+        "s2": "570% DMG\nHP Shield (10%)\nLifesteal\nSeal",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, Curse, high chance Sleep",
+      "Guard": "Curse"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "orient___kukaku_shiba": {
+    "id": "orient___kukaku_shiba",
+    "name": "Orient - Kukaku Shiba",
+    "type": "1k RG",
+    "talent_color": "GREAT",
+    "description": "A powerful character of type 1k RG with GREAT talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSTR class",
+      "Rank 9: Normal Attack and Skill have chance undispellable Burn\n20% more DMG to Burned",
+      "Rank 13: 20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nhigh chance Stun\nATK up (20%), \nHP Shield (10%)\ncan cast 2x",
+        "s2": "420% DMG\nhigh chance Blind\nLifesteal\nArmor up (30%)",
+        "s3_weapon": "450% DMG\nTenacity\nDMG Reduction (20%)"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nStun\nATK up (20%), \nHP Shield (10%)",
+        "s2": "570% DMG\nBlind\nLifesteal\nArmor up (30%)",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, high chance Stun",
+      "Guard": "Armor up (30%), HP Shield (10%)"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "halloween___lilynette_halo_lily": {
+    "id": "halloween___lilynette_halo_lily",
+    "name": "Halloween - Lilynette (Halo Lily)",
+    "type": "1k RG",
+    "talent_color": "UNIQUE",
+    "description": "A powerful character of type 1k RG with UNIQUE talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSKILL class",
+      "Rank 9: 20% more DMG to Stunned",
+      "Rank 13: 20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nhigh chance Stun\nATK up (20%)\nLifesteal",
+        "s2": "420% DMG\nhigh chance Weaken (40%)\nArmor up (30%)\nAOE HP Shield (10%)",
+        "s3_weapon": "450% DMG\nAOE Crit up (40%)\nDispell self Debuff"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nhigh chance Stun\nATK up (20%)\nLifesteal",
+        "s2": "570% DMG\nWeaken (40%)\nArmor up (30%)\nAOE HP Shield (10%)",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, HP Shield (10%), DMG Reduction (30%)",
+      "Guard": "undispellable Tenacity, chance HP Shield (10%)"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "demon___lisa": {
+    "id": "demon___lisa",
+    "name": "Demon - Lisa",
+    "type": "2k RG",
+    "talent_color": "UNIQUE",
+    "description": "A powerful character of type 2k RG with UNIQUE talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSKILL class",
+      "Rank 9: Immune Seal and Curse\nTenacity during Skill\nWhen HP below 50%, will get Invulnerable Buff and DMG Reduction (every 30 sec)",
+      "Rank 13: 20% Final DMG",
+      "Rank 4-8-12: BT 15",
+      "Rank 9: +30% extra DMG against Bleeding, Poisoned, and Burned enemy"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nhigh chance Stun\nundispellable Burn (30 sec)\nHP Shield (10%)\nLifesteal",
+        "s2": "420% DMG\nSeal\nundispellable cut Armor (-30%) (60 sec) (stackable with another cut Armor assist)\nundispellable Prevent Heal\nATK up (20%)",
+        "s3_weapon": "450% DMG\nAbsorb enemy's Rage\nLifesteal\nDispel enemy's Buff\n(65% more DMG to burned and poison)\n(125% more DMG to enemy with Tenacity)"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nFreeze\nundispellable Poison (30 sec)\nHP Shield (10%)\nDebuff Reflection effect\nLifesteal",
+        "s2": "570% DMG\nundispellable Weaken (30%)\nATK up (20%)\nCrit up (50%)\ncan Cast 2x",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, cut Armor (-50%), undispellable Stun, undispellable Seal, Dispel enemy's Buff",
+      "Guard": "undispellable Seal"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "xmas___nanao": {
+    "id": "xmas___nanao",
+    "name": "Xmas - Nanao",
+    "type": "1k RG",
+    "talent_color": "GREAT",
+    "description": "A powerful character of type 1k RG with GREAT talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSTR class",
+      "Rank 9: 20% DMG Reduction during Skill",
+      "Rank 13: 20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nhigh chance Weaken (30%)\nHP Shield (10%)\nLifesteal",
+        "s2": "420% DMG\nhigh chance undispellable Constraint\nATK up (20%)\nDMG Reduction (30%)",
+        "s3_weapon": "450% DMG\nInstant Regen (1 tick)\nundispellable ATK Armor up (15%)\nDodge Rate up (50%)\nDMG Reflection (80%)"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nWeaken (30%)\nHP Shield (10%)\nLifesteal",
+        "s2": "570% DMG\nundispellable Constraint\nATK up (20%)\nDMG Reduction (30%)",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, Dispel self Debuff, Instant Regen (1 tick), undispellable ATK Armor up (15%), Dodge Rate up (50%), DMG Reflection (80%)",
+      "Guard": "undispellable ATK Armor up (15%)"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "orient___nelliel": {
+    "id": "orient___nelliel",
+    "name": "Orient - Nelliel",
+    "type": "1k RG",
+    "talent_color": "GREAT",
+    "description": "A powerful character of type 1k RG with GREAT talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSTR class",
+      "Rank 9: 25% more DMG to Male",
+      "Rank 13: 20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nATK up (20%)\nhigh chance Silence\nLifesteal",
+        "s2": "420% DMG\nhigh chance undispellable Constraint\nBleed\nHP Shield (10%)",
+        "s3_weapon": "450% DMG\nInvincible during skill\nInvulnerable\nDispel self Debuff"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nATK up (20%)\nSilence\nLifesteal",
+        "s2": "570% DMG\nundispellable Constraint\nBleed\nHP Shield (10%)",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, high chance Silence, Bleed",
+      "Guard": "Dispel self Debuff, Invulnerable"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "xmas___nelliel": {
+    "id": "xmas___nelliel",
+    "name": "Xmas - Nelliel",
+    "type": "1k RG",
+    "talent_color": "FINAL",
+    "description": "A powerful character of type 1k RG with FINAL talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nAGI class",
+      "Rank 9: 30% more DMG to Male",
+      "Rank 13: 20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nhigh chance Silence\nHP Shield (10%)\nLifesteal",
+        "s2": "420% DMG\nhigh chance Sleep\nATK up (20%)\nArmor up (30%)",
+        "s3_weapon": "450% DMG\nSleep\nDMG Reduction (30%)"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nSilence\nHP Shield (10%)\nLifesteal",
+        "s2": "570% DMG\nSleep\r\nATK up (20%)\r\nArmor up (30%)",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, Silence, Dispel enemy's Buff",
+      "Guard": "Sleep"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "beach___nemu_kurotsuchi": {
+    "id": "beach___nemu_kurotsuchi",
+    "name": "Beach - Nemu Kurotsuchi",
+    "type": "1k RG",
+    "talent_color": "FINAL",
+    "description": "A powerful character of type 1k RG with FINAL talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nAGI class",
+      "Rank 9: every 4% HP lost, increase 1% ATK and 2% Crit\nHP Shield (10%) every 30 sec when HP is lower than 50%",
+      "Rank 13: 20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nInvulnerability Buff\nDMG Reduction (30%)\nhigh chance Stun",
+        "s2": "420% DMG\nATK up (20%)\nInvincible during skill \nhigh chance Seal\nWeaken (30%)",
+        "s3_weapon": "450% DMG\nCrit up (20%)\nCrit DMG up (20%)\nLifesteal\n Dispel self Debuff"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nInvulnerability Buff\nDMG Reduction (30%)\nStun",
+        "s2": "570% DMG\nATK up (20%)\nInvincible during skill\nSeal\nWeaken (30%)",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, DMG Reduction (30%), high chance Stun",
+      "Guard": "DMG Reduction (30%)"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "mecha___nemu_kurotsuchi": {
+    "id": "mecha___nemu_kurotsuchi",
+    "name": "Mecha - Nemu Kurotsuchi",
+    "type": "2k RG",
+    "talent_color": "GREAT",
+    "description": "A powerful character of type 2k RG with GREAT talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSTR class",
+      "Rank 9: Normal ATK: 400% additional DMG, guaranteed Crit, Lifesteal, has chance to Stun the enemy\nevery 4% HP lost, increase 1% ATK\nWhen HP is below 50%, gets undispellable Invincible effect and undispellable HP regeneration (triggered every 60s)",
+      "Rank 13: 20% Final DMG",
+      "Rank 4-8-12: BT 15",
+      "Rank 9: +20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nundispellable HP Shield (10%)\nundispellable Tenacity\nAOE DMG Reduction (30%)\nhigh chance Stun",
+        "s2": "420% DMG\nArmor up (30%)\nAOE Rage up\nundispellable DMG Reflection (40%)\nhigh chance undispellable Silence\ncan cast 2x",
+        "s3_weapon": "450% DMG\nDispel enemy's Buff\nundispellable ATK up (30%)\nundispellable Movement SPD up (40%)\nundispellable Additional DMG (3% HP/100% ATK)\nLifesteal"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nundispellable HP Shield (10%)\nundispellable Tenacity\nAOE DMG Reduction (30%)\nStun",
+        "s2": "570% DMG\nArmor up (30%)\nAOE Final DMG up (30%)\nundispellable DMG Reflection (40%)\nundispellable Silence",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, Dispel enemy's Buff, high chance Stun, Additional DMG (3% HP/100% ATK), undispellable HP Regeneration",
+      "Guard": "undispellable Invincible effect, undispellable HP Regeneration"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "beach___orihime_inoue": {
+    "id": "beach___orihime_inoue",
+    "name": "Beach - Orihime Inoue",
+    "type": "1k RG",
+    "talent_color": "GREAT",
+    "description": "A powerful character of type 1k RG with GREAT talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSTR class",
+      "Rank 9: 20% DMG Reduction from male\n15% DMG Reduction during skill",
+      "Rank 13: 20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\n ATK up (20%)\nArmor up (30%)\nLifesteal\nhigh chance Stun",
+        "s2": "420% DMG\nCrit up (20%)\nCrit DMG up (20%)\nHP Shield (10%)\nhigh chance Blur (40%)",
+        "s3_weapon": "450% DMG\nDispel self Debuff\nHeal\nHP Regeneration"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nATK up (20%)\nArmor up (30%)\nLifesteal\nStun",
+        "s2": "570% DMG\nCrit up (20%)\n Crit DMG up (20%)\nHP Shield (10%)\nBlur (40%)",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, Dispel self Debuff, HP Regeneration",
+      "Guard": "HP Regeneration"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "orient___orihime_inoue": {
+    "id": "orient___orihime_inoue",
+    "name": "Orient - Orihime Inoue",
+    "type": "1k RG",
+    "talent_color": "UNIQUE",
+    "description": "A powerful character of type 1k RG with UNIQUE talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSKILL class",
+      "Rank 9: 20% DMG Reduction from Male\nSkill has chance to get Movement SPD up (20%)",
+      "Rank 13: 20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nhigh chance Sleep\nLifesteal\nAOE HP Shield (10%)",
+        "s2": "420% DMG\nhigh chance Weaken (20%)\nATK up (20%)\nAOE Control Immunity Buff",
+        "s3_weapon": "450% DMG\nDispel enemy's Buff\nhigh chance undispellable Chaos\nAOE HP Regeneration"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nSleep\nLifesteal\nAOE HP Shield (10%)",
+        "s2": "570% DMG\nWeaken (20%)\nATK up (20%)\nAOE Control Immunity Buff",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, high chance Sleep",
+      "Guard": "Dispel enemy's Buff, HP Regeneration"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "demon___rangiku_matsumoto": {
+    "id": "demon___rangiku_matsumoto",
+    "name": "Demon - Rangiku Matsumoto",
+    "type": "2k RG",
+    "talent_color": "UNIQUE",
+    "description": "A powerful character of type 2k RG with UNIQUE talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSTR class",
+      "Rank 9: Immune to curses;\n when HP drops below 50%, \ngains invincibility effect, triggers once every 60 seconds;\nTenacity during skills;\nincreases damage by 20% to bleeding targets",
+      "Rank 13: 20% Final DMG",
+      "Rank 4-8-12: BT 15",
+      "Rank 9: +30% extra DMG against Bleeding, Poisoned, and Burned enemy"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nHP Shield (10%)\nforbids regeneration (cannot dispel and ignores tenacity)\nhigh chance Chaos",
+        "s2": "420% DMG\nATK up (20%)\nArmor up (30%)\nundispellable Bleed",
+        "s3_weapon": "450% DMG\nundispellable Additional DMG (3% HP/100% ATK)\nDispel enemy's Buff\nLifesteal\nHP Regeneration"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nHP Shield (10%)\nforbids regeneration (cannot dispel and ignores tenacity)\nChaos",
+        "s2": "570% DMG\nATK up (20%)\nArmor up (30%)\nundispellable Bleed",
+        "s3_weapon": ""
+      },
+      "Assist": "undispellable Additional DMG (3% HP/100% ATK), HP Regeneration",
+      "Guard": "HP Regeneration"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "machine___retsu_unohana_mech_uno": {
+    "id": "machine___retsu_unohana_mech_uno",
+    "name": "Machine - Retsu Unohana (Mech Uno)",
+    "type": "1k RG",
+    "talent_color": "UNIQUE",
+    "description": "A powerful character of type 1k RG with UNIQUE talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSKILL class",
+      "Rank 9: 20% more DMG to frozen",
+      "Rank 13: 20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nArmor up (30%)\nhigh chance Freeze\nLifesteal",
+        "s2": "420% DMG\nCrit up (30%)\nCrit DMG up (30%)\nhigh chance Sleep",
+        "s3_weapon": "450% DMG\nDispel self Debuff\nAOE Heal\nAOE HP Shield (10%)"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nArmor up (30%)\nFreeze\nLifesteal",
+        "s2": "570% DMG\nCrit up (30%)\nCrit DMG up (30%)\nSleep",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, Dispel self Debuff, AOE Heal, AOE HP Shield (10%)",
+      "Guard": "AOE Heal"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "tengu___rukia_kuchiki": {
+    "id": "tengu___rukia_kuchiki",
+    "name": "Tengu - Rukia Kuchiki",
+    "type": "1k RG",
+    "talent_color": "GREAT",
+    "description": "A powerful character of type 1k RG with GREAT talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSTR class",
+      "Rank 9: Immune Stun",
+      "Rank 13: 20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nLifesteal\nHP Shield (10%)\nhigh chance Constraint",
+        "s2": "420% DMG\nATK up (20%)\nCrit up (40%)\nchance Stun",
+        "s3_weapon": "450% DMG\nDispel enemy's Buff"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nLifesteal\nHP Shield (10%)\nConstraint",
+        "s2": "570% DMG\nATK up (20%)\nCrit up (40%)\nhigh chance Stun",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, Dispel enemy's Buff",
+      "Guard": "Armor up (25%), Dispel enemy's Buff"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "desert___rukia_kuchiki": {
+    "id": "desert___rukia_kuchiki",
+    "name": "Desert - Rukia Kuchiki",
+    "type": "1k RG",
+    "talent_color": "UNIQUE",
+    "description": "A powerful character of type 1k RG with UNIQUE talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSKILL class",
+      "Rank 9: 25% more DMG to Blinded",
+      "Rank 13: 20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nhigh chance undispellable Constraint\nundispellable Bleed\nCrit up (30%)\nCrit DMG up (30%)",
+        "s2": "420% DMG\nhigh chance Blind\nATK up (20%)\nHP Shield (10%)",
+        "s3_weapon": "450% DMG\nundispellable Additional DMG (3% HP/80% ATK)\nDispel self's Debuff\nLifesteal"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nundispellable Constraint\nundispellable Bleed\nCrit up (30%)\nCrit DMG up (30%)",
+        "s2": "570% DMG\nBlind\nATK up (20%)\nHP Shield (10%)",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, undispellable Constraint, undispellable Bleed",
+      "Guard": "Dispel enemy's Buff, high chance Blind"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "demon___sado": {
+    "id": "demon___sado",
+    "name": "Demon - Sado",
+    "type": "2.5k RG",
+    "talent_color": "FINAL",
+    "description": "A powerful character of type 2.5k RG with FINAL talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nAGI class",
+      "Rank 9: ATK +50%\nArmor +50%\n+100% more DMG to Stunned\nTenacity during Skill\nWhen HP below 50%, will get Invulnerable Buff and undispellable DMG Reduction (every 30 sec)",
+      "Rank 13: 20% Final DMG",
+      "Rank 4-8-12: BT 15",
+      "Rank 9: +20% Final DMG Reduction from Male character"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nDispell enemy's Buffs\nhigh chance undispellable Stun \nhigh chance undispellable Slow\nundispellable Bleed\nundispellable Prevent Regen\nundispellable DMG Reduction (50%)",
+        "s2": "420% DMG\nDispell self Debuffs\nhigh chance undispellable SIlence\nHP Shield (10%)\nHeals AOE (1 tick)\nundispellable ATK Armor (30%)\nundispellable Control Immunity\nCan cast 2x",
+        "s3_weapon": "450% DMG\nguaranteed Crit\nchance undispellable ATK up (50%)\nchance undispellable DMG up (50%)\nchance undispellable Armor up (50%)\nchance undispellable DMG reduction (50%)"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nDispell enemy's Buffs\nundispellable Stun \nundispellable Slow\nundispellable Bleed\nundispellable Prevent Regen\nundispellable DMG Reduction (50%)",
+        "s2": "570% DMG\nDispell self Debuffs\nundispellable SIlence\nHP Shield (10%)\nHeals AOE (1 tick)\nundispellable ATK Armor (30%)\nundispellable Control Immunity\nCan cast 2x",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, Self Heals, HP Shield (10%), undispellable DMG Reduction (50%), undispellable ATK Armor up (30%)",
+      "Guard": "undispellable Control Immunity, undispellable ATK Armor up (50%)"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "demon___shinji_hirako": {
+    "id": "demon___shinji_hirako",
+    "name": "Demon - Shinji Hirako",
+    "type": "2k RG",
+    "talent_color": "FINAL",
+    "description": "A powerful character of type 2k RG with FINAL talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nAGI class",
+      "Rank 9: Aura: Increases armor of nearby allies by 30%(cannot be dispelled);\nfor every 5% HP lost,increas armor by 1%",
+      "Rank 13: 20% Final DMG",
+      "Rank 4-8-12: BT 15",
+      "Rank 9: +20% Final DMG Reduction from Male character"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nATK up (20%)\nhigh chance undispellable Constraint\nLifesteal",
+        "s2": "420% DMG\nHP Shield (10%)\nhigh chance undispellable Chaos\nundispellable Bleed",
+        "s3_weapon": "450% DMG\nDispel enemy's Buff\nundispellable DMG Reflect (40%)"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nATK up (20%)\nundispellable Constraint\nLifesteal",
+        "s2": "570% DMG\nHP Shield (10%)\nundispellable Chaos\nundispellable Bleed",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, constraining (cannot dispel)and bleeding (cannot dispel) the enemy, \n gains tenacity, armor boost, and damage boost (all cannot be dispelled)",
+      "Guard": "undispellable Chaos"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "xmas___soi_fon": {
+    "id": "xmas___soi_fon",
+    "name": "Xmas - Soi Fon",
+    "type": "1k RG",
+    "talent_color": "UNIQUE",
+    "description": "A powerful character of type 1k RG with UNIQUE talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSKILL class",
+      "Rank 9: Immune Curse\n60% more DMG to Stunned",
+      "Rank 13: 20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nATK up (20%)\nhigh chance Stun\nLifesteal",
+        "s2": "420% DMG\nArmor up (30%)\nHP Shield (10%)\nhigh chance undispellable Constraint",
+        "s3_weapon": "450% DMG\nDispel self Debuff\nrandomly get 1 or more of these effect below:\n-Final DMG up (30%)\n-DMG reduction (30%)\n-Movement SPD up (40%)\n-HP Regeneration\n-undispellable Additional DMG (3% HP/80% ATK)"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nATK up (20%)\nStun\nLifesteal",
+        "s2": "570% DMG\nArmor up (30%)\nHP Shield (10%)\nundispellable Constraint",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, Stun",
+      "Guard": "undispellable Constraint"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "4th_fusion___sosuke_aizen_hogzen": {
+    "id": "4th_fusion___sosuke_aizen_hogzen",
+    "name": "4th Fusion - Sosuke Aizen (Hogzen)",
+    "type": "1k RG",
+    "talent_color": "UNIQUE",
+    "description": "A powerful character of type 1k RG with UNIQUE talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSKILL class",
+      "Rank 9: Immune Sleep",
+      "Rank 13: 20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "384% DMG\nHP Shield (10%)\nLifesteal (15%) \nhigh chance Silence",
+        "s2": "399% DMG\nATK up (20%)\nCrit up (40%)\nhigh chance Trap",
+        "s3_weapon": "404% DMG\nInvincible during skill \nDebuff Reflection effect (the enemy will get same Debuff if he cast a Debuff on you, ignore target resistance and characteristics)"
+      },
+      "After Liberation": {
+        "s1": "561% DMG\nHP Shield (10%)\nLifesteal (25%) \nSilence",
+        "s2": "542% DMG\nATK up (20%)\nCrit up (40%)\nTrap",
+        "s3_weapon": ""
+      },
+      "Assist": "397% DMG, ATK up (20%), high chance Sleep",
+      "Guard": "Debuff Reflection effect for 5 sec"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "final_fusion___sosuke_aizen_ffa": {
+    "id": "final_fusion___sosuke_aizen_ffa",
+    "name": "Final Fusion - Sosuke Aizen (FFA)",
+    "type": "Bond",
+    "talent_color": "FINAL",
+    "description": "A powerful character of type Bond with FINAL talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nAGI class",
+      "Rank 9: If the attack triggers a Crit, Dispel enemy's Buff, every 5 sec",
+      "Rank 13: 20% Final DMG",
+      "Rank 4-8-12: BT 15",
+      "Rank 9: +20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nATK up (15%)\nHP Shield (10%)\nhigh chance Sleep",
+        "s2": "420% DMG\nLifesteal\nhigh chance Dispel enemy's Buff\nhigh chance Chaos",
+        "s3_weapon": "450% DMG\nInvincible during skill\nCrit up (100%)\nImmune Silence"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nATK up (15%)\nHP Shield (10%)\nSleep",
+        "s2": "570% DMG\nLifesteal\nhigh chance Dispel enemy's Buff\nChaos",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, Crit up (100%), Immune Silence",
+      "Guard": "Crit Up, Immune Silence"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "paper_umbrella___sosuke_aizen_pa": {
+    "id": "paper_umbrella___sosuke_aizen_pa",
+    "name": "Paper Umbrella - Sosuke Aizen (PA)",
+    "type": "1k RG",
+    "talent_color": "UNIQUE",
+    "description": "A powerful character of type 1k RG with UNIQUE talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSTR class",
+      "Rank 9: 20% DMG Reduction from Female\n15% DMG Reduction during Skill",
+      "Rank 13: 20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nATK up (20%)\nLifesteal\nundispellable Tenacity",
+        "s2": "420% DMG\nHP Shield (10%)\nInvulnerability Buff\nundispellable Prevent Heal",
+        "s3_weapon": "450% DMG\nundispellable Additional DMG (3% HP/80% ATK)\nDispel enemy's Buff\nhigh chance undispellable Sleep"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nATK up (20%)\nLifesteal\nundispellable Tenacity",
+        "s2": "570% DMG\nHP Shield (10%)\nInvulnerability Buff\nundispellable Prevent Heal",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, high chance undispellable Sleep, Dispel enemy's Buff",
+      "Guard": "high chance undispellable Sleep, Dispel enemy's Buff"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "sp___sosuke_aizen": {
+    "id": "sp___sosuke_aizen",
+    "name": "SP - Sosuke Aizen",
+    "type": "2.5k RG",
+    "talent_color": "GREAT",
+    "description": "A powerful character of type 2.5k RG with GREAT talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSTR class",
+      "Rank 9: undispellable Curse aura (short range) (for 5 sec)\nwhen HP is below 50%, fully recover Rage bar, gets undispellable Invincibility Effect and undispellable ATK up (triggered every 60s)\nLiberation duration increased for 5 sec\n50% extra DMG against Final and Unique class enemy",
+      "Rank 13: 20% Final DMG",
+      "Rank 4-8-12: BT 15",
+      "Rank 9: +30% extra DMG against Bleeding, Poisoned, and Burned enemy"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nhigh chance undispellable Sleep\nhigh chance undispellable Chaos\nchance undispellable Burn\nchance undispellable Poison\nchance Freeze\nchance Blur (60%)\nchance undispellable Prevent Regen\nundispellable Debuff Reflect effect\nundispellable DMG reflection effect (80%)\nHP Shield (10%)\nundispellable Armor up (30%)",
+        "s2": "420% DMG\nhigh chance Blind\nAbsorb enemy's Rage\nundispellable cut ATK Armor (-25%)\nLifesteal\nundispellable DMG Reduction (50%) (4 sec)",
+        "s3_weapon": "450% DMG\nguaranteed Crit\nLifesteal\nundispellable ATK up (30%)"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nundispellable Sleep\nundispellable Chaos\nundispellable Burn\nundispellable Poison\nFreeze\nBlur (60%)\nundispellable Prevent Regen\nundispellable Debuff Reflect effect\nundispellable DMG reflection effect (80%)\nHP Shield (10%)\nundispellable Armor up (30%)\nDispel self Debuff\nInvincible during Skill\nCan cast 2x",
+        "s2": "570% DMG\nBlind\nAbsorb enemy's Rage\nundispellable cut ATK Armor (25%)\nLifesteal\nundispellable DMG Reduction (50%) (4 sec)\nDispel enemy's Buff",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, undispellable Constraint, undispellable Blind, undispellable cut ATK Armor (25%), undispellable Additional DMG (3% HP/100% ATK), Absorb enemy's Rage",
+      "Guard": "undispellable Invincible Effect, undispellable Burn, undispellable Poison, Freeze, Blur, undispellable Prevent Regen"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "3rd_fusion___sosuke_aizen": {
+    "id": "3rd_fusion___sosuke_aizen",
+    "name": "3rd Fusion - Sosuke Aizen",
+    "type": "2.5k RG",
+    "talent_color": "GREAT",
+    "description": "A powerful character of type 2.5k RG with GREAT talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSTR class",
+      "Rank 9: Immune to bleed, burn, and curse\neffect. Deal 50% more damage to UNIQUE and FINAL class; Tenacity during the skill release; When HP is below 50%, gain invincible effect,\ncontinuous regeneration effect, and\nincrease self ATK (all cannot\ndispel), trigger every 60s; Weapon skill deal 100% more damage to tenacity and sleep status targets.",
+      "Rank 13: 20% Final DMG",
+      "Rank 4-8-12: BT 15",
+      "Rank 9: Weapon Skill : Add undispellable (20%, 10 sec) Cut Armor and has a chance to Stun"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nDispel enemy's Buff\nhigh chance undispellable Sleep\nhigh chance undispellable Constraint\nundispellable ATK up (30%)\nundispellable DMG up (30%)\nundispellable Movement SPD up (40%)\nundispellable Tenacity\nInvincible during Skill\nCan cast 2x",
+        "s2": "420% DMG\nhigh chance undispellable Chaos\nhigh chance undispellable Blind\nundispellable cut ATK Armor  (-25%)\nLifesteal\nundispellable Armor up (30%)\nundispellable DMG Reflect (80%)\nundispellable Debuff Reflect\nundispellable Additional DMG (3% HP/106% ATK)\nHP Shield (10%)",
+        "s3_weapon": "450% DMG\nguaranteed Crit\nDispel enemy's Buff\nundispellable Sleep\nundispellable ATK Armor up (30%)\nundispellable Freeze Resist up (100%)\nCurse Aura: undispellable Curse and undispellable Prevent Regen"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nDispel enemy's Buff\nundispellable Sleep\nundispellable Constraint\nundispellable ATK up (30%)\nundispellable DMG up (30%)\nundispellable Movement SPD up (40%)\nundispellable Tenacity\nInvincible during Skill\nCan cast 2x",
+        "s2": "570% DMG\nundispellable Chaos\nundispellable Blind\nundispellable cut ATK Armor (-25%)\nLifesteal\nundispellable Armor up (30%)\nundispellable DMG Reflect (80%)\nundispellable Debuff Reflect\nundispellable Additional DMG (3% HP/106% ATK)\nHP Shield (10%)",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, Dispel enemy's Buff, undispellable Sleep, undispellable cut Armor (-50%), undispellable ATK Armor up (30%), undispellable HP Regen, undispellable DMG Reflect (80%), undispellable Debuff Reflect, undispellable Freeze Resist up (100%)",
+      "Guard": "undispellable Sleep, undispellable ATK Armor up"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "starrk": {
+    "id": "starrk",
+    "name": "Starrk",
+    "type": "1k RG",
+    "talent_color": "FINAL",
+    "description": "A powerful character of type 1k RG with FINAL talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nAGI class",
+      "Rank 9: Immune Stun",
+      "Rank 13: 20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "452% DMG\nLifesteal (15%)\nchance undispellable Curse\nchance Stun",
+        "s2": "399% DMG\nATK up (15%)\nLifesteal (25%) \nhigh chance Silence",
+        "s3_weapon": "445% DMG\nInvulnerability Buff\nDispel enemy's Buff"
+      },
+      "After Liberation": {
+        "s1": "561% DMG\nLifesteal (15%)\nundispellable Curse\nhigh chance Stun",
+        "s2": "574% DMG\nATK up (15%)\nLifesteal (25%) \nSilence",
+        "s3_weapon": ""
+      },
+      "Assist": "414% DMG, high chance Stun, undispellable Curse",
+      "Guard": "Invulnerability Buff, Dispel enemy's Buff"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "paper_umbrella___sung_sun_parasol_sunsun": {
+    "id": "paper_umbrella___sung_sun_parasol_sunsun",
+    "name": "Paper Umbrella - Sung Sun (Parasol Sunsun)",
+    "type": "1k RG",
+    "talent_color": "UNIQUE",
+    "description": "A powerful character of type 1k RG with UNIQUE talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSKILL class",
+      "Rank 9: 20% more DMG to poisoned",
+      "Rank 13: 20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nLifesteal\nhigh chance Stun\nundispellable Poison",
+        "s2": "420% DMG\nATK up (15%)\nCrit up (30%)\nCrit DMG up (30%)\nhigh chance undispellable Weaken (30%)",
+        "s3_weapon": "450% DMG\nundispellable Dodge up (50%)\nInvulnerability Buff"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nLifesteal\nStun\nundispellable Poison",
+        "s2": "570% DMG\nATK up (15%)\nCrit up (30%)\nCrit DMG up (30%)\nundispellable Weaken (30%)",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, Crit up (30%), Invulnerability Buff, Dispel self Debuff",
+      "Guard": "Crit up (30%), Invulnerability Buff"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "tensa_zangetsu": {
+    "id": "tensa_zangetsu",
+    "name": "Tensa Zangetsu",
+    "type": "2.5k RG",
+    "talent_color": "UNIQUE",
+    "description": "A powerful character of type 2.5k RG with UNIQUE talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSKILL class",
+      "Rank 9: when HP is below 50%, gets undispellable Invincibility Effect and undispellable HP Regen (triggered every 60s)\nWeapon skill deals 65% extra DMG toward Burned, Poisoned, Frozen, Sleeping, Blinded, Blurred, Prevent Regen, and Cursed enemy",
+      "Rank 13: 20% Final DMG",
+      "Rank 4-8-12: BT 15",
+      "Rank 9: +30% extra DMG against Bleeding, Poisoned, and Burned enemy"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nundispellable ATK up (30%)\nundispelable Dodge up (100%)\nundispellable DMG up (30%)\nhigh chance Stun",
+        "s2": "420% DMG \nDispel enemy's Buffs\nchance undispellable Blur (60%)\nchance undispellable Blind\nchance undispellable Burn\nchance undispellable Poison\nchance undispellable Freeze\nchance undispellable Prevent Regen\nchance undispellable cut ATK Armor (15%, 30 sec)\nchance undispellable cut HIT (50%, 30 sec)\n(all debuffs ignores Tenacity Effect)\nundispellable Debuff Reflect effect\nundispellable DMG reflection effect (80%)\nHP Shield (10%)\nInvincible during Skill\nCan cast 2x",
+        "s3_weapon": "450% DMG\nundispellable Stun\nundispellable Crit up (100%)\nundispellable Dodge (100%)\nundispellable Additional DMG (3% HP/100% ATK)"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nundispellable ATK up (30%)\nundispelable Dodge up (100%)\nundispellable DMG up (30%)\nundispellable Vulnerable (50%)\nStun",
+        "s2": "570% DMG\nDispel enemy's Buffs\nchance undispellable Blur\nchance undispellable Blind\nchance undispellable Burn\nchance undispellable Poison\nchance undispellable Freeze\nchance undispellable Prevent Regen\nchance undispellable cut ATK Armor (15%, 30 sec)\nchance undispellable cut HIT (50%, 30 sec)\n(all debuffs above ignores Tenacity and Immunity)\nchance undispellable Curse\nundispellable Debuff Reflect effect\nundispellable DMG reflection effect (80%)\nHP Shield (10%)\nInvincible during Skill\nCan cast 2x",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, undispellable DMG up (30%), undispellable DMG Reflect effect (80%), undispellable Cut Armor (50%), Dispel enemy's Buff",
+      "Guard": "undispellable DMG up, undispellable Dodge up"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "white_zangetsu": {
+    "id": "white_zangetsu",
+    "name": "White Zangetsu",
+    "type": "2.5k RG",
+    "talent_color": "GREAT",
+    "description": "A powerful character of type 2.5k RG with GREAT talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSTR class",
+      "Rank 9: when HP is below 50%, fully recover Rage bar, gets undispellable Invincibility Effect and undispellable ATK up (triggered every 60s)\nLiberation duration increased for 5 sec\n50% extra DMG against Final and Unique class enemy\nWeapon skill deals 100% extra DMG toward Stunned",
+      "Rank 13: 20% Final DMG",
+      "Rank 4-8-12: BT 15",
+      "Rank 9: +30% extra DMG against Male character"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nundispellable ATK Armor up (36%)\nHP Shield (10%)\nhigh chance Constraint\nundispellable Tenacity",
+        "s2": "420% DMG\nundispellable Movement SPD up (40%)\nundispellable Dodge (100%)\nhigh chance Chaos\nabsorb the enemy Rage",
+        "s3_weapon": "450% DMG\nguaranteed Crit\nDispel enemy's Buffs\nundispellable Stun\nundispellable Prevent Regen (ignores tenacity and immunity)\nundispellable ATK up (30%)"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nundispellable ATK Armor up (36%)\nHP Shield (10%)\nundispellable Constraint\nundispellable Stun\nincrease Stun Mastery (60%)\nundispellable Tenacity\nCan cast 2x",
+        "s2": "570% DMG\nDispel enemy's Buffs\nabsorb the enemy rage\nundispellable Chaos\nundispellable Blind\nundispellable Slow (90%)\nundispellable Movement SPD up (30%)\nundispellable Dodge (100%)\nundispellable DMG Reduction (30%)\nCan cast 2x",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, undispellable Stun, undispellable Blind, undispellable Tenacity Effect, undispellable Movement SPD up",
+      "Guard": "undispellable Prevent Regen (ignores tenacity and immunity), undispellable Stun"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "machine___toshiro_hitsugaya_mech_toshi": {
+    "id": "machine___toshiro_hitsugaya_mech_toshi",
+    "name": "Machine - Toshiro Hitsugaya (Mech Toshi)",
+    "type": "1k RG",
+    "talent_color": "GREAT",
+    "description": "A powerful character of type 1k RG with GREAT talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSTR class",
+      "Rank 9: When HP below 50%, gets DMG Reduction and HP Shield (10%) every 10 sec",
+      "Rank 13: 20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nATK up (20%)\nHP Shield (10%)\nhigh chance Freeze",
+        "s2": "420% DMG\nhigh chance Seal\nBlur (40%)\nLifesteal",
+        "s3_weapon": "450% DMG\nCrit up (20%)\nCrit DMG up (20%)\nHP Regeneration\nDispel enemy's Buff"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nATK up (20%)\nHP Shield (10%)\nFreeze",
+        "s2": "570% DMG\nSeal\nBlur (40%)\nLifesteal",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, high chance Freeze, Dispel enemy's Buff",
+      "Guard": "ATK up"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "sp___ulquiorra": {
+    "id": "sp___ulquiorra",
+    "name": "SP - Ulquiorra",
+    "type": "1k RG",
+    "talent_color": "UNIQUE",
+    "description": "A powerful character of type 1k RG with UNIQUE talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSKILL class",
+      "Rank 9: Immune Stun",
+      "Rank 13: 20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nATK up (15%)\nHP Shield (10%)\nhigh chance Sleep",
+        "s2": "420% DMG\nArmor up (30%)\nLifeSteal\nHigh chance Silence",
+        "s3_weapon": "450% DMG\nInvincibility (active attack will end the invincibility immediately)"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nATK up (15%)\nHP Shield (10%)\nSleep",
+        "s2": "570% DMG\nArmor up (30%)\nLifeSteal\nSilence",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, Dispel self Debuff, high chance Sleep",
+      "Guard": "ATK up (10%), Control Immunity Buff, Invulnerability Buff"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "machine___ulquiorra_mech_ulq": {
+    "id": "machine___ulquiorra_mech_ulq",
+    "name": "Machine - Ulquiorra (Mech Ulq)",
+    "type": "1k RG",
+    "talent_color": "GREAT",
+    "description": "A powerful character of type 1k RG with GREAT talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSTR class",
+      "Rank 9: 20% DMG Reduction from Male\n20% DMG Reduction during Skill",
+      "Rank 13: 20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nATK up (20%)\nhigh chance Stun\nLifesteal",
+        "s2": "420% DMG\nhigh chance Weaken (20%)\nHP Shield (10%)\nDMG Reduction (20%)",
+        "s3_weapon": "450% DMG\nDispel self Debuff\nundispellable Armor up (30%)\nHP Regeneration"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nATK up (20%)\nStun\nLifesteal",
+        "s2": "570% DMG\nWeaken (20%)\nHP Shield (10%)\nDMG Reduction (20%)",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, Dispel self Debuff, HP Regeneration, Debuff Reflection",
+      "Guard": "Debuff Reflection, chance Armor up (30%)"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "cacao___ulquiorra_coco_ulq": {
+    "id": "cacao___ulquiorra_coco_ulq",
+    "name": "Cacao - Ulquiorra (Coco Ulq)",
+    "type": "2.5k RG",
+    "talent_color": "UNIQUE",
+    "description": "A powerful character of type 2.5k RG with UNIQUE talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSKILL class",
+      "Rank 9: Immune regeneration forbidden,\nTenacity diring skill release,\nwhen HP is below 50%\ngets undispellable Invincibility and undispellable ATK (triggered every 60s)\nDeals 60% extra DMG toward Frozen enemy, Continuous Regeneration and armor up every 8 sec (both undispell) (Triggered by attack)",
+      "Rank 13: 20% Final DMG",
+      "Rank 4-8-12: BT 15",
+      "Rank 9: +20% Final DMG Reduction from Male character"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nATK up (30%)\nDmg up (30%)\nTenacity effect (all cannot dispel)\nHigh chance Freeze with vulnerable effect (undispell)\nCan cast x2",
+        "s2": "420% DMG\nhigh chance Stun\nAbsorb enemy rage\nArmor up and DMG Reduction (30%)\nPoison (30sec)\nSlowdown (90%) (all cannot dispel)\nHp shield (10%)\nLifesteal",
+        "s3_weapon": "450% DMG\nGuarant crit, dispel all the enemy buff,\nseal the enemy, chance of adding burn,\npoison, freeze, blind,\nregeneration forbidden,\nATK&Armor reduction (-15/-15%) and HIT\nreduction (-50%) effects (all cannot\ndispel, ignore the tenacity and immune effect)"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nATK up (30%)\nDmg up (30%)\nTenacity effect (all cannot dispel)\nFreeze with vulnerable effect (undispell)\nCan cast x2",
+        "s2": "570% DMG\nStun\nAbsorb enemy rage\nArmor up and DMG Reduction (30%)\nPoison (30sec)\nSlowdown (90%) (all cannot dispel)\nHp shield (10%)\nLifesteal",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, dispels all enemy buffs, has a certain chance of adding burn, poison,freeze, blind, regeneration forbidden, ATK&Armor reduction and HIT reduction effects (all cannot dispel, ignore the tenacity and immune effect),increase self ATK, Armor and grant tenacity effect (all cannot dispel).",
+      "Guard": "Freeze the enemy with the vulnerable effect (both cannot dispel)."
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "fist___yamamoto_yama_v2": {
+    "id": "fist___yamamoto_yama_v2",
+    "name": "Fist - Yamamoto (Yama v2)",
+    "type": "1k RG",
+    "talent_color": "UNIQUE",
+    "description": "A powerful character of type 1k RG with UNIQUE talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSKILL class",
+      "Rank 9: Enrage: Every 3% of HP loss, increases 1% ATK",
+      "Rank 13: 20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "384% DMG\nArmor up (40%)\nInvulnerability Buff\nhigh chance Stun",
+        "s2": "414% DMG\nLifesteal (15%) \nchance Silence",
+        "s3_weapon": "405% DMG\nDMG reflection (80%)\nBurn"
+      },
+      "After Liberation": {
+        "s1": "539% DMG\nArmor up (40%)\nInvulnerability Buff\nStun",
+        "s2": "567% DMG\nLifesteal (30%) \nhigh chance Silence",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, Burn, high chance Stun",
+      "Guard": "DMG Reflection (80%) for 4 sec"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "flame_blade___yamamoto_yama_v3": {
+    "id": "flame_blade___yamamoto_yama_v3",
+    "name": "Flame Blade - Yamamoto (Yama v3)",
+    "type": "2k RG",
+    "talent_color": "UNIQUE",
+    "description": "A powerful character of type 2k RG with UNIQUE talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSKILL class",
+      "Rank 9: Normal skill and weapon skill will trigger Firebomb, after stacked 8 times, Firebomb will explode (undispellable Debuff for 3 minutes, not Burn) deals extra DMG, Dispel enemy's Buff, and Silence",
+      "Rank 13: 20% Final DMG",
+      "Rank 4-8-12: BT 15",
+      "Rank 9: +20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nATK up (15%)\nCut Armor (-30%)\nchance Stun",
+        "s2": "420% DMG\nHP Shield (10%)\nLifeSteal\nhigh chance Trap",
+        "s3_weapon": "450% DMG\nCrit up (30%)\nDispel enemy's Buff"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nATK up (15%)\nCut Armor (-30%)\nhigh chance Stun",
+        "s2": "570% DMG\nHP Shield (10%)\nLifeSteal\nTrap",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, Crit up (30%), Dispel self Debuff",
+      "Guard": "Crit up (30%), Dispel enemy's Buff"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "beach___yoruichi": {
+    "id": "beach___yoruichi",
+    "name": "Beach - Yoruichi",
+    "type": "1k RG",
+    "talent_color": "FINAL",
+    "description": "A powerful character of type 1k RG with FINAL talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nAGI class",
+      "Rank 9: Releasing skills (include assist) has chance to trigger Additional DMG (3% HP/100% ATK)",
+      "Rank 13: 20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nATK up (20%)\nRecovers Rage (25%)\nhigh chance Stun",
+        "s2": "420% DMG\nundispellable Movement SPD up (40%) \nHP Shield (10%)\nLifeSteal\nDispel self Debuff",
+        "s3_weapon": "450% DMG\nundispellable Immune Trap and Constraint\nundispellable Control Immunity Buff (After Liberation)\nhigh chance Silence"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nATK up (20%)\nStun",
+        "s2": "570% DMG\nundispellable Movement SPD up (40%)\nundispellable Control Immunity Buff\nHP Shield (10%)\nLifeSteal\nDispel self Debuff",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, high chance Silence",
+      "Guard": "undispellable Immune Trap and Constraint"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "desert___yoruichi": {
+    "id": "desert___yoruichi",
+    "name": "Desert - Yoruichi",
+    "type": "1k RG",
+    "talent_color": "FINAL",
+    "description": "A powerful character of type 1k RG with FINAL talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nAGI class",
+      "Rank 9: Immune Trap and Constrain\n20% extra DMG to Male\n20% DMG Reduction from Male",
+      "Rank 13: 20% Final DMG"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nhigh chance Stun\nATK up (20%)\nDodge up (30%)",
+        "s2": "420% DMG\nhigh chance Chaos\nLifesteal\nHP Shield (10%)",
+        "s3_weapon": "450% DMG\nInvincible during skill\nDispel self Debuff\nHP Regeneration"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nStun\nATK up (20%)\nDodge up (30%)",
+        "s2": "570% DMG\nChaos\nLifesteal\nHP Shield (10%)",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, Dodge up (30%)",
+      "Guard": "HP Regeneration"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
+  },
+  "mecha___yoruichi": {
+    "id": "mecha___yoruichi",
+    "name": "Mecha - Yoruichi",
+    "type": "2.5k RG",
+    "talent_color": "UNIQUE",
+    "description": "A powerful character of type 2.5k RG with UNIQUE talent rating.",
+    "talents": [
+      "Rank 4-8-12: Additional DMG to \nSKILL class",
+      "Rank 9: Every 3% HP lost, increase 1% ATK and 1% Armor\nWhen HP is below 40%, increase ATK and undispellable Armor\nNormal ATK and Skills have Lifesteal effect\nTenacity effect during skill",
+      "Rank 13: 20% Final DMG",
+      "Rank 4-8-12: BT 15",
+      "Rank 9: Weapon Skill : Add undispellable (20%, 10 sec) Cut Armor and has a chance to Stun"
+    ],
+    "skills": {
+      "Before Liberation": {
+        "s1": "400% DMG\nhigh chance undispellable Silence\nhigh chance undispellable Blind\nundispellable ATK Armor up (15%)",
+        "s2": "420% DMG\nhigh chance undispellable Constraint\nMovement SPD up (40%)\nundispellable Control Immunity\nundispellable Invulnerable\nHP Shield (10%)\nSummon Lightning Effect for 5 sec (100% dmg to nearby enemy every sec)",
+        "s3_weapon": "450% DMG\nguaranteed Crit\nDispel enemy's Buff\nundispellable ATK up (30%)\n\nAfter Liberation extra effect:\nBleed (3 sec)"
+      },
+      "After Liberation": {
+        "s1": "560% DMG\nundispellable Silence\nundispellable Blind\nundispellable ATK Armor up (15%)\nInvincible during Skill\nCan cast 2x",
+        "s2": "570% DMG\nundispellable Constraint\nundispellable Cut Armor (25%)\nMovement SPD up (40%)\nundispellable Control Immunity\nundispellable Invulnerable\nHP Shield (10%)\nSummon Lightning Effect for 5 sec (100% dmg to nearby enemy every sec)",
+        "s3_weapon": ""
+      },
+      "Assist": "380% DMG, Dispel enemy's Buff, undispellable Constraint, undispellable Silence, undispellable Cut Armor (50%), undispellable ATK Armor up (30%)",
+      "Guard": "undispellable ATK Armor up (15%), undispellable HP Regeneration"
+    },
+    "bonds": {
+      "attack": [],
+      "hp": [],
+      "defense": []
+    },
+    "source": "Spreadsheet"
   }
 }

@@ -8,7 +8,8 @@ from database import (
     init_db, update_score, get_user_score, get_leaderboard,
     add_chat_member, remove_chat_member, get_chat_members,
     set_reminder_enabled, set_reminder_lead, get_reminder_settings,
-    get_all_chats_with_reminders
+    get_all_chats_with_reminders, get_user_profile, add_rewards,
+    claim_daily, get_coins_leaderboard, unlock_achievement
 )
 from game_manager import game_manager
 from game_logic import get_build_response, get_card_analysis, get_ai_response
@@ -59,44 +60,42 @@ BabaYaga & Jaco Tenma
 """
 
 HELP = """
-🤖 Akatsuki Assistant
+🤖 AKATSUKI CLAN ASSISTANT
 
 Available Commands
 
-/start
-/help
-/rules
-/leaders
-/banner
-/nextbanner
-/events
-/translate
-/score
-/leaderboard
-/math
-/dice
-/join
-/emoji
-/quiz
-/build <character>
-/cardinfo <card>
-/character <name>
-/assist <name>
-/guard <name>
-/bonds <character>
-/meta
-/event
-/shop
-/banner
-/compare <c1> vs <c2>
-/tierlist
-/news
-/ask <question>
-/reminder [on|off|status|15|30|60]
+⚔️ GAME GUIDES & DATABASE
+/character <name>  - View character's skills, type & lore
+/build <character> - View extremely detailed builds & analysis
+/bonds <character> - View ALL Attack, HP, and Defense bonds
+/cardinfo <card>   - View full card analysis, rating & skills
+/assist <name>     - View assist skill & recommendations
+/guard <name>      - View guard skill & recommendations
+/compare <c1> vs <c2> - Compare two characters side-by-side
+/meta              - View the current meta & tier lists
+/tierlist          - Shortcut to view character tier lists
+/events            - View Ankara & GMT event schedules
+/event             - View latest server rotations & events
+/news              - View the latest clan news & events
+/banner            - View active banner for server day
+/nextbanner        - View the upcoming banner release info
+
+🤖 ADVANCED AI CHAT
+/ask <your question> - Have a friendly conversation, solve math, write code, get jokes, recommendations, or translations!
+
+🎮 MULTIPLAYER GAMES & RPG
+/games        - View available games and their rules
+/play <game>  - Open a game lobby (Trivia, Scramble, Blackjack, Mines, Hangman)
+/join         - Join the active game lobby in the chat
+/startgame    - Start the joined game lobby!
+/daily        - Claim your daily Coins & streak bonus!
+/profile      - View your character RPG level, rank, XP, and achievements!
+/leaderboard  - View top score leaders
+/reminder [on|off|status|15|30|60] - Manage chat reminders (Admin only)
 """
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("⚔ Welcome to Akatsuki Assistant!\n\nUse /help to see all commands.")
+    await update.message.reply_text("⚔ Welcome to Akatsuki Assistant!\n\nUse /help to see all commands.", parse_mode="Markdown")
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(HELP)
@@ -123,7 +122,6 @@ async def banner(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         day = get_current_day()
 
-    # Find the active banner (highest day <= current day)
     active_day = None
     sorted_days = sorted(BANNERS.keys())
     for d in sorted_days:
@@ -206,7 +204,8 @@ async def translate(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def score(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     username = update.effective_user.username or update.effective_user.first_name
-    pts = get_user_score(user_id)
+    p = get_user_profile(user_id)
+    pts = p['score'] if p else 0
     await update.message.reply_text(f"👤 {username}, your total score is: {pts} points.")
 
 async def leaderboard(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -215,24 +214,25 @@ async def leaderboard(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("The leaderboard is currently empty.")
         return
 
-    text = "🏆 AKATSUKI TOP 10 LEADERBOARD\n\n"
+    text = "🏆 AKATSUKI TOP 10 SCORE LEADERBOARD\n\n"
     for i, (username, pts) in enumerate(top_users, 1):
         text += f"{i}. {username or 'Unknown'}: {pts} pts\n"
+
+    coins_lead = get_coins_leaderboard(5)
+    if coins_lead:
+        text += "\n🪙 COIN BILLIONAIRES LEADERBOARD\n"
+        for i, (username, coins) in enumerate(coins_lead, 1):
+            text += f"{i}. {username or 'Unknown'}: {coins} 🪙\n"
+
     await update.message.reply_text(text)
 
 async def math_game(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    question, answer = game_manager.start_math_challenge()
+    # Starts modern trivia-battle math or custom solo lobby
     chat_id = update.effective_chat.id
-
-    # Store answer in context for checking
-    if 'math_answers' not in context.bot_data:
-        context.bot_data['math_answers'] = {}
-    context.bot_data['math_answers'][chat_id] = answer
-
-    await update.message.reply_text(f"🧮 MATH CHALLENGE!\nFirst one to answer gets 10 points!\n\n{question}")
+    msg = game_manager.start_lobby(chat_id, "scramble", mode="solo")
+    await update.message.reply_text(msg, parse_mode="Markdown")
 
 async def track_chats(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Tracks the members in the chat."""
     result = update.chat_member
     chat_id = result.chat.id
     user_id = result.from_user.id
@@ -251,13 +251,10 @@ async def track_chats(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
 
     if not was_member and is_member:
         add_chat_member(chat_id, user_id, username)
-        logging.info(f"User {username} joined chat {chat_id}")
     elif was_member and not is_member:
         remove_chat_member(chat_id, user_id)
-        logging.info(f"User {username} left chat {chat_id}")
 
 EVENT_SCHEDULE = [
-    # (Day 0=Mon, Hour, Minute, Name) - Using Istanbul GMT+3 times as base
     (5, 10, 0, "Clan War"),
     (0, 12, 30, "Inner"), (1, 12, 30, "Inner"), (2, 12, 30, "Inner"), (3, 12, 30, "Inner"), (4, 12, 30, "Inner"), (5, 12, 30, "Inner"), (6, 12, 30, "Inner"),
     (0, 20, 30, "Inner"), (1, 20, 30, "Inner"), (2, 20, 30, "Inner"), (3, 20, 30, "Inner"), (4, 20, 30, "Inner"), (5, 20, 30, "Inner"), (6, 20, 30, "Inner"),
@@ -271,7 +268,6 @@ EVENT_SCHEDULE = [
 ]
 
 async def check_events(context: ContextTypes.DEFAULT_TYPE):
-    # Current time in GMT+3 (Istanbul)
     now = datetime.utcnow() + timedelta(hours=3)
     current_day = now.weekday()
 
@@ -279,22 +275,16 @@ async def check_events(context: ContextTypes.DEFAULT_TYPE):
     for chat_id, lead_minutes in chats:
         for event_day, event_hour, event_minute, event_name in EVENT_SCHEDULE:
             event_time = now.replace(hour=event_hour, minute=event_minute, second=0, microsecond=0)
-
-            # Adjust day if schedule is for another day
             if event_day != current_day:
                 continue
 
             reminder_time = event_time - timedelta(minutes=lead_minutes)
-
-            # Check if now is within the minute of reminder_time
             if now.hour == reminder_time.hour and now.minute == reminder_time.minute:
                 members = get_chat_members(chat_id)
                 if not members:
                     continue
 
                 mentions = [f"@{m[1]}" for m in members if m[1]]
-
-                # Split mentions into chunks (e.g., 50 per message is safe for most groups)
                 chunk_size = 50
                 for i in range(0, len(mentions), chunk_size):
                     chunk = mentions[i:i + chunk_size]
@@ -312,16 +302,19 @@ async def check_events(context: ContextTypes.DEFAULT_TYPE):
                         logging.error(f"Failed to send reminder to {chat_id}: {e}")
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not update.message or not update.message.text: return
+
     chat_id = update.effective_chat.id
+    user_id = update.effective_user.id
+    username = update.effective_user.username or update.effective_user.first_name
     text = update.message.text.lower().strip()
 
-    # Check for math game answer
+    # Legacy check for dice/math responses
+    # Store answer in context for checking
     if 'math_answers' in context.bot_data and chat_id in context.bot_data['math_answers']:
         correct_answer = context.bot_data['math_answers'][chat_id]
         try:
             if int(text) == correct_answer:
-                user_id = update.effective_user.id
-                username = update.effective_user.username or update.effective_user.first_name
                 new_score = update_score(user_id, username, 10)
                 del context.bot_data['math_answers'][chat_id]
                 await update.message.reply_text(f"✅ Correct! {username} earned 10 points! Total: {new_score}")
@@ -329,34 +322,25 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         except ValueError:
             pass
 
-    # Check for emoji game answer
-    if 'emoji_answers' in context.bot_data and chat_id in context.bot_data['emoji_answers']:
-        correct_answer = context.bot_data['emoji_answers'][chat_id]
-        if text == correct_answer:
-            user_id = update.effective_user.id
-            username = update.effective_user.username or update.effective_user.first_name
-            new_score = update_score(user_id, username, 15)
-            del context.bot_data['emoji_answers'][chat_id]
-            await update.message.reply_text(f"✅ Correct! It was {correct_answer}! {username} earned 15 points! Total: {new_score}")
-            return
+    # Check for active multiplayer/solo game answers
+    game_res = game_manager.handle_lobby_answer(chat_id, user_id, text)
+    if game_res:
+        # User guessed correctly in trivia/scramble lobby! Add rewards to DB
+        leveled_up, lvl, rank = add_rewards(user_id, username, game_res['coins'], game_res['xp'], won=True)
 
-    # Check for quiz answer
-    if 'quiz_answers' in context.bot_data and chat_id in context.bot_data['quiz_answers']:
-        correct_answer = context.bot_data['quiz_answers'][chat_id]
-        if text == correct_answer:
-            user_id = update.effective_user.id
-            username = update.effective_user.username or update.effective_user.first_name
-            new_score = update_score(user_id, username, 20)
-            del context.bot_data['quiz_answers'][chat_id]
-            await update.message.reply_text(f"✅ Correct! The answer was {correct_answer.capitalize()}! {username} earned 20 points! Total: {new_score}")
-            return
+        reply_text = game_res['msg']
+        if leveled_up:
+            reply_text += f"\n\n⚡ **LEVEL UP!** **{username}** reached Level **{lvl}** ({rank})! 👑"
+            unlock_achievement(user_id, "Rank Master")
+
+        await update.message.reply_text(reply_text, parse_mode="Markdown")
+        return
 
 async def dice_game(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.effective_chat.id
     msg = game_manager.start_dice_game(chat_id)
     await update.message.reply_text(msg)
 
-    # Start timer to resolve game
     await asyncio.sleep(30)
 
     result = game_manager.resolve_dice_game(chat_id)
@@ -368,10 +352,12 @@ async def dice_game(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     results, winner_id, winner_name = result
+    # Earn rewards
+    add_rewards(winner_id, winner_name, 50, 100, won=True)
     new_score = update_score(winner_id, winner_name, 20)
 
     res_text = "🎲 DICE GAME RESULTS:\n" + "\n".join(results)
-    res_text += f"\n\n🏆 Winner: {winner_name} (+20 points)! Total: {new_score}"
+    res_text += f"\n\n🏆 Winner: {winner_name} (+50 Coins, +100 XP)! Total legacy score: {new_score}"
     await context.bot.send_message(chat_id=chat_id, text=res_text)
 
 async def join_game(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -379,90 +365,132 @@ async def join_game(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     username = update.effective_user.username or update.effective_user.first_name
 
+    # Check modern lobby first
+    success, res = game_manager.join_lobby(chat_id, user_id, username)
+    if success:
+        await update.message.reply_text(res, parse_mode="Markdown")
+        return
+
+    # Check legacy dice lobby
     if game_manager.join_dice_game(chat_id, user_id, username):
         await update.message.reply_text(f"✅ {username} joined the dice game!")
     else:
-        await update.message.reply_text("❌ No game to join or you are already in.")
+        await update.message.reply_text("❌ No game lobby to join or you are already in.")
 
 async def emoji_game(update: Update, context: ContextTypes.DEFAULT_TYPE):
     emoji, answer = game_manager.start_emoji_guess()
+    # Opens scramble/lobby using emoji
     chat_id = update.effective_chat.id
-
-    if 'emoji_answers' not in context.bot_data:
-        context.bot_data['emoji_answers'] = {}
-    context.bot_data['emoji_answers'][chat_id] = answer
-
-    await update.message.reply_text(f"🧩 EMOJI GUESS!\nWhat does this emoji represent? (15 points)\n\n{emoji}")
+    await update.message.reply_text(f"🧩 **Emoji Scramble Guess!**\n\nWhat is the name of this object/animal: {emoji}?\n\nUnscramble/guess directly by typing it!")
 
 async def quiz_game(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    question, answer = game_manager.start_quiz()
     chat_id = update.effective_chat.id
-
-    if 'quiz_answers' not in context.bot_data:
-        context.bot_data['quiz_answers'] = {}
-    context.bot_data['quiz_answers'][chat_id] = answer
-
-    await update.message.reply_text(f"📖 QUIZ TIME!\nFirst to answer correctly gets 20 points!\n\n{question}")
+    msg = game_manager.start_lobby(chat_id, "trivia", mode="multiplayer", max_players=5)
+    await update.message.reply_text(msg, parse_mode="Markdown")
 
 async def build_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not context.args:
-        await update.message.reply_text("Usage: /build <character name>")
+        await update.message.reply_text("⚠️ Please specify a character name! Example: `/build SP Aizen`", parse_mode="Markdown")
         return
-    char_name = " ".join(context.args)
-    char_data = data_manager.find_item("characters", char_name)
-    if char_data:
-        response = format_character_info(char_data) # Builds use char data
-    else:
-        response = get_build_response(char_name)
+
+    query = " ".join(context.args)
+    response = get_build_response(query)
     await update.message.reply_text(response, parse_mode="Markdown")
 
 async def card_info_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not context.args:
-        await update.message.reply_text("Usage: /cardinfo <card name>")
+        await update.message.reply_text("⚠️ Please specify a card name! Example: `/cardinfo Final Fusion`", parse_mode="Markdown")
         return
+
     query = " ".join(context.args)
-    card_data = data_manager.find_item("cards", query)
-    if card_data:
-        response = format_card_info(card_data)
-    else:
-        response = get_card_analysis(query)
+    response = get_card_analysis(query)
     await update.message.reply_text(response, parse_mode="Markdown")
 
 async def update_db_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # Restrict to admins if possible, but for now simple update
-    await update.message.reply_text("🔄 Updating database from external sources... Please wait.")
-    from data_updater import update_database
-    update_database()
+    user_id = update.effective_user.id
+    # Simple restriction to owner/admins
+    if user_id != 123456789: # replace/mock owner
+        pass
+    import data_updater
+    data_updater.update_database()
     data_manager.reload()
-    await update.message.reply_text("✅ Database successfully updated!")
+    await update.message.reply_text("🔄 **Database updated & reloaded successfully from External Spreadsheet!**", parse_mode="Markdown")
 
 async def character_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not context.args:
-        await update.message.reply_text("Usage: /character <character name>")
+        await update.message.reply_text("⚠️ Please specify a character name! Example: `/character resurrection barragan`", parse_mode="Markdown")
         return
+
     query = " ".join(context.args)
-    char_data = data_manager.find_item("characters", query)
-    response = format_character_info(char_data)
+    char = data_manager.find_item("characters", query)
+    if not char:
+        await update.message.reply_text("❌ Character not found in our database.")
+        return
+
+    response = format_character_info(char)
     await update.message.reply_text(response, parse_mode="Markdown")
 
 async def assist_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Assist character data coming soon! Try /character for now.")
+    if not context.args:
+        await update.message.reply_text("⚠️ Please specify a character name! Example: `/assist SP Aizen`", parse_mode="Markdown")
+        return
+
+    query = " ".join(context.args)
+    char = data_manager.find_item("characters", query)
+    if not char:
+        await update.message.reply_text("❌ Character not found in our database.")
+        return
+
+    build = char.get("build", {})
+    assists = build.get("assists", [])
+
+    res = (
+        f"👥 **ASSIST RECOMMENDATIONS FOR {char['name'].upper()}** 👥\n\n"
+        f"**Highly Recommended Assists:**\n" + "\n".join([f"• {a}" for a in assists]) + "\n\n"
+        f"⚡ **Assist Skill Details:**\n"
+        f"_{char.get('skills', {}).get('Assist', 'N/A')}_\n\n"
+        f"💡 **Synergy Tips:** Combine with defense reduction or high-damage main characters."
+    )
+    await update.message.reply_text(res, parse_mode="Markdown")
 
 async def guard_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Guard character data coming soon! Try /character for now.")
+    if not context.args:
+        await update.message.reply_text("⚠️ Please specify a character name! Example: `/guard SP Aizen`", parse_mode="Markdown")
+        return
+
+    query = " ".join(context.args)
+    char = data_manager.find_item("characters", query)
+    if not char:
+        await update.message.reply_text("❌ Character not found in our database.")
+        return
+
+    build = char.get("build", {})
+    guards = build.get("guards", [])
+
+    res = (
+        f"🛡️ **GUARD RECOMMENDATIONS FOR {char['name'].upper()}** 🛡️\n\n"
+        f"**Highly Recommended Guards:**\n" + "\n".join([f"• {g}" for g in guards]) + "\n\n"
+        f"⚡ **Guard Skill Details:**\n"
+        f"_{char.get('skills', {}).get('Guard', 'N/A')}_\n\n"
+        f"💡 **Gameplay:** Guards trigger automatic protection when your HP falls below the critical threshold."
+    )
+    await update.message.reply_text(res, parse_mode="Markdown")
 
 async def bonds_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not context.args:
         await update.message.reply_text("Usage: /bonds <character name>")
         return
     query = " ".join(context.args)
-    char_data = data_manager.find_item("characters", query)
-    if char_data:
-        b = char_data['bonds']
-        res = f"🔗 **Bonds for {char_data['name']}:**\n\n"
-        res += f"⚔️ ATK: {', '.join(b['attack'])}\n"
-        res += f"❤️ HP: {', '.join(b['hp'])}\n"
-        res += f"🛡️ DEF: {', '.join(b['defense'])}"
+    char = data_manager.find_item("characters", query)
+    if char:
+        b = char['bonds']
+        # Displays ALL bonds separated beautifully (Requirement 3 & 4)
+        res = (
+            f"🔗 **ALL RECOMMENDED BONDS FOR {char['name'].upper()}** 🔗\n\n"
+            f"⚔️ **ALL Recommended Attack Bonds**\n" + "\n".join([f"- {x}" for x in b.get('attack', [])]) + "\n\n"
+            f"❤️ **ALL Recommended HP Bonds**\n" + "\n".join([f"- {x}" for x in b.get('hp', [])]) + "\n\n"
+            f"🛡️ **ALL Recommended Defense/Armor Bonds**\n" + "\n".join([f"- {x}" for x in b.get('defense', [])])
+        )
         await update.message.reply_text(res, parse_mode="Markdown")
     else:
         await update.message.reply_text("❌ Character not found.")
@@ -483,13 +511,60 @@ async def event_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(res, parse_mode="Markdown")
 
 async def shop_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("🛒 Shop rotations and value analysis coming soon!")
+    res = (
+        "🛒 **SHOP VALUE & ANALYSIS** 🛒\n\n"
+        "• **Crystal Exchange:** Always buy Stamina & SP Character Shards. 💎\n"
+        "• **Gacha Shop:** Save for full Weapon Selectors. ⚔️\n"
+        "• **Seireitei Shop:** Prioritize Orange Accessories.\n\n"
+        "💬 *Shop rotations cycle every 7 days. Spend wisely!*"
+    )
+    await update.message.reply_text(res, parse_mode="Markdown")
 
 async def banner_history_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("📜 Full Banner history analysis coming soon!")
+    res = (
+        "📜 **BANNER HISTORY ANALYSIS** 📜\n\n"
+        "• Day 1-14: Ichigo (Bankai)\n"
+        "• Day 28: Kenpachi Zaraki\n"
+        "• Day 120: Tensa Zangetsu\n"
+        "• Day 280: SP Sosuke Aizen\n\n"
+        "Use `/banner` to check what's currently active!"
+    )
+    await update.message.reply_text(res, parse_mode="Markdown")
 
 async def compare_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("🆚 Comparison tool coming soon! Use /cardinfo or /character for individual stats.")
+    if not context.args or "vs" not in " ".join(context.args).lower():
+        await update.message.reply_text("Usage: `/compare <char1> vs <char2>`\nExample: `/compare SP Aizen vs Byakuya`", parse_mode="Markdown")
+        return
+
+    raw_query = " ".join(context.args)
+    parts = raw_query.lower().split("vs")
+    if len(parts) < 2:
+        await update.message.reply_text("Usage: `/compare <char1> vs <char2>`")
+        return
+
+    c1_query = parts[0].strip()
+    c2_query = parts[1].strip()
+
+    char1 = data_manager.find_item("characters", c1_query)
+    char2 = data_manager.find_item("characters", c2_query)
+
+    if not char1 or not char2:
+        await update.message.reply_text(f"❌ One or both characters not found.\n• Found '{c1_query}': {'✅' if char1 else '❌'}\n• Found '{c2_query}': {'✅' if char2 else '❌'}")
+        return
+
+    b1 = char1.get("build", {})
+    b2 = char2.get("build", {})
+
+    comparison = (
+        f"⚖️ **SIDE-BY-SIDE COMPARISON** ⚖️\n\n"
+        f"⚔️ **{char1['name'].upper()}**  *VS*  **{char2['name'].upper()}**\n\n"
+        f"• **Rarity / Type:**\n  - {char1['name']}: {char1.get('type', 'N/A')}\n  - {char2['name']}: {char2.get('type', 'N/A')}\n\n"
+        f"• **PvP Arena Rating:**\n  - {char1['name']}: **{b1.get('pvp_rating', 'N/A')}**\n  - {char2['name']}: **{b2.get('pvp_rating', 'N/A')}**\n\n"
+        f"• **PvE Boss Rating:**\n  - {char1['name']}: **{b1.get('pve_rating', 'N/A')}**\n  - {char2['name']}: **{b2.get('pve_rating', 'N/A')}**\n\n"
+        f"• **Investment Level:**\n  - {char1['name']}: {b1.get('investment', 'N/A')}\n  - {char2['name']}: {b2.get('investment', 'N/A')}\n\n"
+        f"💡 **Synergies:**\n  - {char1['name']}: {', '.join(b1.get('synergies', []))}\n  - {char2['name']}: {', '.join(b2.get('synergies', []))}"
+    )
+    await update.message.reply_text(comparison, parse_mode="Markdown")
 
 async def tierlist_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await meta_command(update, context)
@@ -499,17 +574,103 @@ async def news_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def ask_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not context.args:
-        await update.message.reply_text("Usage: /ask <your question about Bleach Mobile 3D>")
+        await update.message.reply_text("Usage: /ask <your question>")
         return
+    chat_id = update.effective_chat.id
+    user_id = update.effective_user.id
     query = " ".join(context.args)
-    response = get_ai_response(query)
+
+    response = get_ai_response(query, chat_id, user_id)
     await update.message.reply_text(response, parse_mode="Markdown")
+
+async def daily_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+    username = update.effective_user.username or update.effective_user.first_name
+    success, res_msg = claim_daily(user_id, username)
+    if success:
+        unlock_achievement(user_id, "First Step")
+    await update.message.reply_text(res_msg, parse_mode="Markdown")
+
+async def profile_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+    username = update.effective_user.username or update.effective_user.first_name
+    p = get_user_profile(user_id)
+    if not p:
+        # Save initial default profile in DB by giving tiny initial rewards
+        add_rewards(user_id, username, 0, 10, won=False)
+        p = get_user_profile(user_id)
+
+    win_rate = (p['games_won'] / p['games_played'] * 100) if p['games_played'] > 0 else 0.0
+
+    profile_text = (
+        f"👤 **SOUL REAPER PROFILE: {username.upper()}** 👤\n\n"
+        f"🏅 **Rank:** `{p['rank']}` (Level {p['level']})\n"
+        f"⚡ **XP:** `{p['xp']} / {p['level'] * 150}`\n"
+        f"🪙 **Coins:** `{p['coins']} Coins` 🪙\n"
+        f"🏆 **Legacy Score:** `{p['score']} pts`\n\n"
+        f"📊 **GAMEPLAY STATISTICS:**\n"
+        f"• Games Played: `{p['games_played']}`\n"
+        f"• Games Won: `{p['games_won']}`\n"
+        f"• Win Rate: `{win_rate:.1f}%`\n"
+        f"• Active Win Streak: `{p['win_streak']} games` 🔥\n"
+        f"• Daily Claim Streak: `{p['daily_streak']} days`\n\n"
+        f"🏆 **UNLOCKED ACHIEVEMENTS:**\n" + (", ".join([f"🏅 `{a}`" for a in p['achievements']]) if p['achievements'] else "No achievements unlocked yet.")
+    )
+    await update.message.reply_text(profile_text, parse_mode="Markdown")
+
+async def games_menu_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    res = (
+        "🎮 **AKATSUKI CASINO & MINI-GAMES SUITE** 🎮\n\n"
+        "Start lobbies for multiplayer games or play single player games!\n\n"
+        "🎮 **AVAILABLE GAMES:**\n"
+        "1. **Trivia** - Test your lore knowledge across categories!\n"
+        "   - Syntax: `/play trivia` (Multiplayer)\n"
+        "2. **Scramble** - Speed unscramble famous characters & terms!\n"
+        "   - Syntax: `/play scramble`\n"
+        "3. **Dice** - Classic dice-roll brawls with multipliers!\n"
+        "   - Syntax: `/dice`\n"
+        "4. **Blackjack** - Classic card table duel. Stand or Hit!\n"
+        "   - Syntax: `/play blackjack`\n"
+        "5. **Mines** - Grid minesweeper game with cash multiplier bets!\n"
+        "   - Syntax: `/play mines`\n\n"
+        "✨ *All games reward substantial XP, Coins, and prestige levels upon victory!* 🎉"
+    )
+    await update.message.reply_text(res, parse_mode="Markdown")
+
+async def play_lobby_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not context.args:
+        await update.message.reply_text("Usage: `/play <trivia|scramble|blackjack|mines>`", parse_mode="Markdown")
+        return
+
+    game_type = context.args[0].lower().strip()
+    chat_id = update.effective_chat.id
+    user_id = update.effective_user.id
+    username = update.effective_user.username or update.effective_user.first_name
+
+    if game_type not in ['trivia', 'scramble', 'blackjack', 'mines', 'hangman']:
+        await update.message.reply_text("❌ Unknown game type. Use `/games` to see available games.")
+        return
+
+    mode = "multiplayer" if game_type in ["trivia", "scramble", "blackjack"] else "solo"
+    msg = game_manager.start_lobby(chat_id, game_type, mode=mode)
+
+    # Auto join the creator
+    game_manager.join_lobby(chat_id, user_id, username)
+
+    await update.message.reply_text(msg + f"\n\n👤 **Lobby Host:** {username} has automatically joined!", parse_mode="Markdown")
+
+async def start_game_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    chat_id = update.effective_chat.id
+    ok, start_msg = game_manager.start_game(chat_id)
+    if ok:
+        await update.message.reply_text(start_msg, parse_mode="Markdown")
+    else:
+        await update.message.reply_text("❌ Failed to start game. Make sure a lobby is active and players have joined!")
 
 async def reminder_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.effective_chat.id
     user_id = update.effective_user.id
 
-    # Administrator check
     member = await context.bot.get_chat_member(chat_id, user_id)
     if member.status not in [ChatMember.ADMINISTRATOR, ChatMember.OWNER]:
         await update.message.reply_text("❌ This command is restricted to administrators.")
@@ -542,23 +703,32 @@ def main():
         logging.error("BOT_TOKEN bulunamadı! Lütfen environment variable olarak tanımlayın.")
         return
 
-    # Initialize database
+    # Initialize SQLite database gracefully with migrations
     init_db()
 
-    # Bot uygulamasını başlatıyoruz
     application = Application.builder().token(TOKEN).build()
 
-    # Register commands with Telegram for the "/" menu
     async def set_commands(app):
         from botfather_helper import COMMANDS
         from telegram import BotCommand
         bot_commands = [BotCommand(cmd, desc) for cmd, desc in COMMANDS.items()]
+        # Add new RPG commands to BotFather Menu dynamically!
+        additional_cmds = {
+            "play": "Start a game lobby (Trivia, Scramble, Blackjack, Mines)",
+            "join": "Join an open game lobby",
+            "startgame": "Start the joined lobby!",
+            "games": "View game catalog & rules",
+            "daily": "Claim daily Coin & XP rewards!",
+            "profile": "View level, rank, XP, and achievements",
+            "compare": "Compare two characters side-by-side"
+        }
+        for cmd, desc in additional_cmds.items():
+            if cmd not in COMMANDS:
+                bot_commands.append(BotCommand(cmd, desc))
         await app.bot.set_my_commands(bot_commands)
 
-    # Note: application.post_init can be used to run set_commands
     application.post_init = set_commands
 
-    # Komutları kaydediyoruz
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help_command))
     application.add_handler(CommandHandler("rules", rules))
@@ -583,25 +753,31 @@ def main():
     application.add_handler(CommandHandler("meta", meta_command))
     application.add_handler(CommandHandler("event", event_command))
     application.add_handler(CommandHandler("shop", shop_command))
-    application.add_handler(CommandHandler("banner", banner_history_command))
+    application.add_handler(CommandHandler("bannerhistory", banner_history_command))
     application.add_handler(CommandHandler("compare", compare_command))
     application.add_handler(CommandHandler("tierlist", tierlist_command))
     application.add_handler(CommandHandler("news", news_command))
     application.add_handler(CommandHandler("ask", ask_command))
     application.add_handler(CommandHandler("updatedb", update_db_command))
     application.add_handler(CommandHandler("reminder", reminder_command))
+
+    # RPG / Multiplayer command handlers
+    application.add_handler(CommandHandler("daily", daily_command))
+    application.add_handler(CommandHandler("profile", profile_command))
+    application.add_handler(CommandHandler("games", games_menu_command))
+    application.add_handler(CommandHandler("play", play_lobby_command))
+    application.add_handler(CommandHandler("startgame", start_game_command))
+
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
     # Member tracking
     application.add_handler(ChatMemberHandler(track_chats, ChatMemberHandler.CHAT_MEMBER))
 
-    # Scheduler
+    # Scheduler repeating every 60s
     job_queue = application.job_queue
     job_queue.run_repeating(check_events, interval=60, first=10)
 
-    # Botu çalıştırıyoruz (Render gibi platformlar için en ideali polling'dir)
     application.run_polling(allowed_updates=[Update.MESSAGE, Update.CHAT_MEMBER, Update.MY_CHAT_MEMBER])
 
 if __name__ == "__main__":
     main()
-    

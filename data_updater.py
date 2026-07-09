@@ -3,14 +3,10 @@ import pandas as pd
 import json
 import os
 import logging
-from bs4 import BeautifulSoup
 from io import StringIO
 
 # Config
-# Note: Bit.ly links usually redirect to Google Sheets or Wikis.
-# The user provided bit.ly/bm3dchar and a direct spreadsheet link.
 CHAR_DB_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQHxqiuCWeLcndKBkz-nl9xwN3q7Qhbad3QRGFZflTpG8NIs2s2u0lUpqAqPA3mh92uDiRSgzdIdHox/pub?output=csv"
-WIKI_BASE_URL = "https://bleachm3d.fandom.com/wiki/BleachM3d_Wiki"
 DATA_DIR = "data"
 
 logging.basicConfig(level=logging.INFO)
@@ -30,24 +26,87 @@ def fetch_sheet_data(url):
         logging.error(f"Error fetching sheet data: {e}")
     return None
 
+def contains_chinese(s):
+    return any('\u4e00' <= char <= '\u9fff' for char in s)
+
 def parse_characters(df):
     characters = {}
     if df is None: return characters
 
-    # Simple parsing logic - in reality, Bleach spreadsheet layouts can be messy
-    for index, row in df.iterrows():
-        raw_name = str(row.get('NAME', ''))
-        if not raw_name or raw_name == 'nan': continue
+    start_rows = df[df['Unnamed: 1'].notna()].index.tolist()
+    logging.info(f"Found {len(start_rows)} character starts in the spreadsheet.")
 
-        # Extract clean name (first line of cell usually)
-        name = raw_name.split('\n')[0].strip()
-        key = name.lower().replace(" ", "_")
+    for i in range(len(start_rows)):
+        start = start_rows[i]
+        end = start_rows[i+1] if i + 1 < len(start_rows) else len(df)
+        block = df.iloc[start:end]
+
+        # Name extraction & cleaning
+        raw_name = str(block.iloc[0]['Unnamed: 1'])
+        lines = [line.strip() for line in raw_name.split('\n') if line.strip()]
+        english_lines = [line for line in lines if not contains_chinese(line)]
+        name = " ".join(english_lines).strip()
+        if not name:
+            continue
+
+        key = name.lower().replace(" ", "_").replace("(", "").replace(")", "").replace("-", "_")
+
+        rg_type = str(block.iloc[0]['RG TYPE']).strip()
+        if rg_type == "nan":
+            rg_type = "Unknown"
+
+        talent_color = str(block.iloc[0]['CHARACTER CLASS\nTALENT COLOR']).strip()
+        if talent_color == "nan":
+            talent_color = "Unknown"
+
+        # Talent extraction
+        skill_header_idx = None
+        for r_idx in range(1, len(block)):
+            if str(block.iloc[r_idx]['SKILL DESCRIPTION']).strip() == 'Skill':
+                skill_header_idx = r_idx
+                break
+        if skill_header_idx is None:
+            skill_header_idx = 2
+
+        talent_text = []
+        for r_idx in range(1, skill_header_idx):
+            row = block.iloc[r_idx]
+            r_5 = str(row.get('Unnamed: 5', '')).strip()
+            r_6 = str(row.get('Unnamed: 6', '')).strip()
+            r_7 = str(row.get('Unnamed: 7', '')).strip()
+            if r_5 and r_5 != 'nan':
+                talent_text.append(f"Rank 4-8-12: {r_5}")
+            if r_6 and r_6 != 'nan':
+                talent_text.append(f"Rank 9: {r_6}")
+            if r_7 and r_7 != 'nan':
+                talent_text.append(f"Rank 13: {r_7}")
+
+        # Skills extraction
+        skills = {}
+        for r_idx in range(skill_header_idx + 1, len(block)):
+            row = block.iloc[r_idx]
+            desc = str(row.get('SKILL DESCRIPTION', '')).strip()
+            r_5 = str(row.get('Unnamed: 5', '')).strip()
+            r_6 = str(row.get('Unnamed: 6', '')).strip()
+            r_7 = str(row.get('Unnamed: 7', '')).strip()
+
+            if desc in ['Before Liberation', 'After Liberation']:
+                skills[desc] = {
+                    's1': r_5 if r_5 and r_5 != 'nan' else '',
+                    's2': r_6 if r_6 and r_6 != 'nan' else '',
+                    's3_weapon': r_7 if r_7 and r_7 != 'nan' else ''
+                }
+            elif desc in ['Assist', 'Guard']:
+                skills[desc] = r_5 if r_5 and r_5 != 'nan' else ''
 
         characters[key] = {
+            "id": key,
             "name": name,
-            "type": str(row.get('RG TYPE', 'Unknown')),
-            "description": str(row.get('CHARACTER CLASS\nTALENT COLOR', '')).replace('\n', ' '),
-            "skills": [str(row.get('SKILL DESCRIPTION', ''))], # Simplified
+            "type": rg_type,
+            "talent_color": talent_color,
+            "description": f"A powerful character of type {rg_type} with {talent_color} talent rating.",
+            "talents": talent_text,
+            "skills": skills,
             "bonds": {
                 "attack": [],
                 "hp": [],
@@ -55,6 +114,7 @@ def parse_characters(df):
             },
             "source": "Spreadsheet"
         }
+
     return characters
 
 def save_json(filename, data):
@@ -65,38 +125,13 @@ def update_database():
     ensure_dirs()
     logging.info("Starting database update from external sources...")
 
-    # 1. Fetch from Spreadsheet
+    # Fetch from Spreadsheet
     df = fetch_sheet_data(CHAR_DB_URL)
     chars = parse_characters(df)
 
-    # 2. Mock Wiki Fetch (since actual scraping requires per-page iteration)
-    # This would normally crawl WIKI_BASE_URL
-
-    # Merge Logic (Prioritizing Character DB)
+    # Save to JSON
     save_json("characters.json", chars)
-
-    # Mocking Cards and Meta for now as Spreadsheet mainly has Chars/Bonds
-    cards = {
-        "final_fusion": {
-            "name": "Final Fusion",
-            "type": "Attack",
-            "rarity": "SP",
-            "skills": {
-                "skill1": {"name": "Fragor", "effect": "DMG Up", "cooldown": "15s", "best_usage": "Opener"},
-                "skill2": {"name": "Ultra-Fragor", "effect": "Def Down", "cooldown": "20s", "best_usage": "Mid-combo"},
-                "skill3": {"name": "Transcendence", "explanation": "Huge AOE", "hidden_interactions": "None", "priority": "High", "combos": "1-2-3"}
-            },
-            "stats": {"hp": "10000", "attack": "2500", "defense": "800", "pierce": "500", "crit": "400", "block": "300"},
-            "analysis": {"pvp": "S Tier", "pve": "A Tier", "guild_war": "S Tier", "arena": "S Tier"},
-            "strategy": {"weaknesses": "None", "strengths": "Burst", "strong_against": ["Tanks"], "countered_by": ["Silence"], "best_synergies": ["Mugetsu"]},
-            "recommendations": {"bonds": ["Aizen"], "team": ["SP Team"], "assist": "Nelliel", "guard": "Yamamoto"},
-            "rating": {"overall": "9.5/10", "investment": "High"},
-            "expert_opinion": "A must have for any serious ATK build."
-        }
-    }
-    save_json("cards.json", cards)
-
-    logging.info(f"Update complete. {len(chars)} characters imported.")
+    logging.info(f"Update complete. {len(chars)} characters imported and saved.")
 
 if __name__ == "__main__":
     update_database()
