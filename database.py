@@ -1,5 +1,6 @@
 import sqlite3
 from datetime import datetime, timedelta
+import random
 
 DB_NAME = "akatsuki_bot.db"
 
@@ -13,6 +14,15 @@ RANKS = {
     20: "Royal Guard",
     25: "Head Captain",
     30: "Soul King"
+}
+
+# Daily quests list
+QUESTS = {
+    1: {"name": "Play a casino or trivia game lobby (/play)", "target": 1, "reward_coins": 120, "reward_xp": 120, "type": "play"},
+    2: {"name": "Perform a character Gacha summon (/gacha)", "target": 1, "reward_coins": 150, "reward_xp": 150, "type": "gacha"},
+    3: {"name": "Solve a math calculation using AI chat (/ask solve 25*4)", "target": 1, "reward_coins": 100, "reward_xp": 100, "type": "math"},
+    4: {"name": "Analyze the active battle meta (/meta)", "target": 1, "reward_coins": 80, "reward_xp": 80, "type": "meta"},
+    5: {"name": "Lookup an advanced Bleach build (/build SP Aizen)", "target": 1, "reward_coins": 100, "reward_xp": 100, "type": "build"}
 }
 
 def get_rank_for_level(lvl):
@@ -59,6 +69,38 @@ def init_db():
             lead_minutes INTEGER DEFAULT 15
         )
     """)
+
+    # Daily quests table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS daily_quests (
+            user_id INTEGER PRIMARY KEY,
+            quest_id INTEGER,
+            progress INTEGER DEFAULT 0,
+            completed INTEGER DEFAULT 0,
+            assigned_date TEXT
+        )
+    """)
+
+    # Dynamic Admin Settings / Announcements & Schedules table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS admin_settings (
+            key TEXT PRIMARY KEY,
+            val TEXT
+        )
+    """)
+
+    # Gacha Inventory tracking
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS gacha_inventory (
+            user_id INTEGER,
+            character_id TEXT,
+            character_name TEXT,
+            rarity TEXT,
+            count INTEGER DEFAULT 1,
+            PRIMARY KEY (user_id, character_id)
+        )
+    """)
+
     conn.commit()
 
     # 2. Migration: Add columns to existing DB tables if they don't exist
@@ -79,13 +121,11 @@ def init_db():
             cursor.execute(f"ALTER TABLE users ADD COLUMN {col_name} {col_type}")
             conn.commit()
         except sqlite3.OperationalError:
-            # Column already exists, safe to ignore
             pass
 
     conn.close()
 
 def update_score(user_id, username, points):
-    # Backward compatibility with existing score scoring
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
     cursor.execute("SELECT score FROM users WHERE user_id = ?", (user_id,))
@@ -139,15 +179,13 @@ def add_rewards(user_id, username, coins_reward, xp_reward, won=False):
 
     if res:
         score_val, coins, xp, lvl, gp, gw, ws = res
-        new_score = score_val + int(xp_reward / 2) # legacy score tracker correlation
+        new_score = score_val + int(xp_reward / 2)
         new_coins = coins + coins_reward
         new_xp = xp + xp_reward
         new_gp = gp + 1
         new_gw = gw + 1 if won else gw
         new_ws = ws + 1 if won else 0
 
-        # Calculate level up
-        # formula: xp needed to level up = lvl * 150
         while new_xp >= (lvl * 150):
             new_xp -= (lvl * 150)
             lvl += 1
@@ -196,8 +234,6 @@ def claim_daily(user_id, username):
             conn.close()
             return False, "❌ You have already claimed your daily reward today! Come back tomorrow. 🕒"
 
-        # Check if yesterday was claimed to keep streak
-        # Simple date diff check
         streak_maintained = False
         if last_daily:
             try:
@@ -208,7 +244,7 @@ def claim_daily(user_id, username):
                 pass
 
         new_streak = (streak + 1) if streak_maintained or not last_daily else 1
-        reward = 100 + (new_streak * 10) # streak bonus
+        reward = 100 + (new_streak * 10)
         new_coins = coins + reward
 
         cursor.execute("""
@@ -255,7 +291,7 @@ def unlock_achievement(user_id, ach_name):
         coins = res[1]
         if ach_name not in ach_list:
             ach_list.append(ach_name)
-            new_coins = coins + 100 # achievement coin reward
+            new_coins = coins + 100
             cursor.execute("UPDATE users SET achievements = ?, coins = ? WHERE user_id = ?", (json.dumps(ach_list), new_coins, user_id))
             unlocked = True
     conn.commit()
@@ -313,3 +349,114 @@ def get_all_chats_with_reminders():
     results = cursor.fetchall()
     conn.close()
     return results
+
+# --- NEW: Daily Quest Database Helpers ---
+def get_or_create_daily_quest(user_id):
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.execute("SELECT quest_id, progress, completed, assigned_date FROM daily_quests WHERE user_id = ?", (user_id,))
+    res = cursor.fetchone()
+
+    today_str = datetime.utcnow().strftime("%Y-%m-%d")
+
+    if not res or res[3] != today_str:
+        # Assign a different quest every day (based on user_id and current date to ensure stability across lookups today)
+        random.seed(int(user_id) + int(datetime.utcnow().timestamp()) % 10000)
+        q_id = random.choice(list(QUESTS.keys()))
+        random.seed() # reset seed
+
+        cursor.execute("""
+            INSERT OR REPLACE INTO daily_quests (user_id, quest_id, progress, completed, assigned_date)
+            VALUES (?, ?, 0, 0, ?)
+        """, (user_id, q_id, today_str))
+        conn.commit()
+
+        q_data = QUESTS[q_id]
+        progress = 0
+        completed = 0
+    else:
+        q_id, progress, completed, assigned_date = res
+        q_data = QUESTS[q_id]
+
+    conn.close()
+    return {
+        "quest_id": q_id,
+        "name": q_data["name"],
+        "target": q_data["target"],
+        "progress": progress,
+        "completed": completed,
+        "reward_coins": q_data["reward_coins"],
+        "reward_xp": q_data["reward_xp"],
+        "type": q_data["type"]
+    }
+
+def progress_daily_quest(user_id, quest_type):
+    quest = get_or_create_daily_quest(user_id)
+    if quest["type"] == quest_type and quest["completed"] == 0:
+        new_progress = quest["progress"] + 1
+        completed_val = 1 if new_progress >= quest["target"] else 0
+
+        conn = sqlite3.connect(DB_NAME)
+        cursor = conn.cursor()
+        cursor.execute("""
+            UPDATE daily_quests SET progress = ?, completed = ? WHERE user_id = ?
+        """, (new_progress, completed_val, user_id))
+        conn.commit()
+        conn.close()
+        return completed_val == 1
+    return False
+
+def claim_daily_quest_rewards(user_id, username):
+    quest = get_or_create_daily_quest(user_id)
+    if quest["completed"] == 1:
+        conn = sqlite3.connect(DB_NAME)
+        cursor = conn.cursor()
+        cursor.execute("UPDATE daily_quests SET completed = 2 WHERE user_id = ?", (user_id,))
+        conn.commit()
+        conn.close()
+
+        # Reward
+        add_rewards(user_id, username, quest["reward_coins"], quest["reward_xp"])
+        return quest["reward_coins"], quest["reward_xp"]
+    return None
+
+# --- NEW: Admin Settings Helpers ---
+def set_admin_setting(key, val):
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.execute("INSERT OR REPLACE INTO admin_settings (key, val) VALUES (?, ?)", (key, val))
+    conn.commit()
+    conn.close()
+
+def get_admin_setting(key, default_val=None):
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.execute("SELECT val FROM admin_settings WHERE key = ?", (key,))
+    res = cursor.fetchone()
+    conn.close()
+    return res[0] if res else default_val
+
+# --- NEW: Gacha System Helpers ---
+def add_to_inventory(user_id, char_id, char_name, rarity):
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.execute("SELECT count FROM gacha_inventory WHERE user_id = ? AND character_id = ?", (user_id, char_id))
+    res = cursor.fetchone()
+    if res:
+        new_count = res[0] + 1
+        cursor.execute("UPDATE gacha_inventory SET count = ? WHERE user_id = ? AND character_id = ?", (new_count, user_id, char_id))
+    else:
+        cursor.execute("""
+            INSERT INTO gacha_inventory (user_id, character_id, character_name, rarity, count)
+            VALUES (?, ?, ?, ?, 1)
+        """, (user_id, char_id, char_name, rarity))
+    conn.commit()
+    conn.close()
+
+def get_inventory(user_id):
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.execute("SELECT character_name, rarity, count FROM gacha_inventory WHERE user_id = ? ORDER BY rarity DESC, character_name ASC", (user_id,))
+    res = cursor.fetchall()
+    conn.close()
+    return res

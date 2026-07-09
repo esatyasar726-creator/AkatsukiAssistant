@@ -1,6 +1,7 @@
 import os
 import asyncio
 import logging
+import random
 from datetime import datetime, timedelta
 from deep_translator import GoogleTranslator
 from banner_data import BANNERS, REFERENCE_DATE, REFERENCE_DAY
@@ -9,7 +10,9 @@ from database import (
     add_chat_member, remove_chat_member, get_chat_members,
     set_reminder_enabled, set_reminder_lead, get_reminder_settings,
     get_all_chats_with_reminders, get_user_profile, add_rewards,
-    claim_daily, get_coins_leaderboard, unlock_achievement
+    claim_daily, get_coins_leaderboard, unlock_achievement,
+    get_or_create_daily_quest, progress_daily_quest, claim_daily_quest_rewards,
+    set_admin_setting, get_admin_setting, add_to_inventory, get_inventory
 )
 from game_manager import game_manager
 from game_logic import get_build_response, get_card_analysis, get_ai_response
@@ -83,16 +86,27 @@ Available Commands
 🤖 ADVANCED AI CHAT
 /ask <your question> - Have a friendly conversation, solve math, write code, get jokes, recommendations, or translations!
 
-🎮 MULTIPLAYER GAMES & RPG
+🎯 DAILY QUESTS & REWARDS
+/quest             - View your active randomized Daily Quest!
+/claimquest        - Claim rewards for completed Daily Quests!
+/daily             - Claim your daily Coins & streak bonus!
+/profile           - View your level, rank, XP, and achievements!
+/inventory         - View your Gacha character collection!
+
+🎪 GACHA SIMULATOR
+/gacha             - Perform a single premium character summon!
+/gacha10           - Perform a 10x multi character summon!
+
+🎮 MULTIPLAYER GAMES
 /games        - View available games and their rules
 /play <game>  - Open a game lobby (Trivia, Scramble, Blackjack, Mines, Hangman)
 /join         - Join the active game lobby in the chat
 /startgame    - Start the joined game lobby!
-/daily        - Claim your daily Coins & streak bonus!
-/profile      - View your character RPG level, rank, XP, and achievements!
-/leaderboard  - View top score leaders
 /reminder [on|off|status|15|30|60] - Manage chat reminders (Admin only)
 """
+
+# Admin list for panel commands
+ADMIN_IDS = [123456789, 987654321]  # Mock admin lists, Klaus & staff IDs can be added
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("⚔ Welcome to Akatsuki Assistant!\n\nUse /help to see all commands.", parse_mode="Markdown")
@@ -121,6 +135,12 @@ async def banner(update: Update, context: ContextTypes.DEFAULT_TYPE):
             return
     else:
         day = get_current_day()
+
+    # Check for admin custom banner overrides
+    custom_banner = get_admin_setting(f"banner_day_{day}")
+    if custom_banner:
+        await update.message.reply_text(f"📅 Current Override Banner (Day {day})\n\nDay {day}: {custom_banner}")
+        return
 
     active_day = None
     sorted_days = sorted(BANNERS.keys())
@@ -161,6 +181,12 @@ async def next_banner(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("❌ No upcoming banners found in the schedule.")
 
 async def events(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # Dynamic events fetch with potential admin custom overrides
+    custom_sched = get_admin_setting("custom_schedule")
+    if custom_sched:
+        await update.message.reply_text(f"📅 **CLAN EVENTS SCHEDULE (ADMIN OVERRIDE)**\n\n{custom_sched}", parse_mode="Markdown")
+        return
+
     events_text = (
         "📅 CLAN EVENTS SCHEDULE\n\n"
         "⚔ Clan War\n"
@@ -227,7 +253,6 @@ async def leaderboard(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(text)
 
 async def math_game(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # Starts modern trivia-battle math or custom solo lobby
     chat_id = update.effective_chat.id
     msg = game_manager.start_lobby(chat_id, "scramble", mode="solo")
     await update.message.reply_text(msg, parse_mode="Markdown")
@@ -309,26 +334,36 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     username = update.effective_user.username or update.effective_user.first_name
     text = update.message.text.lower().strip()
 
-    # Legacy check for dice/math responses
-    # Store answer in context for checking
     if 'math_answers' in context.bot_data and chat_id in context.bot_data['math_answers']:
         correct_answer = context.bot_data['math_answers'][chat_id]
         try:
             if int(text) == correct_answer:
                 new_score = update_score(user_id, username, 10)
                 del context.bot_data['math_answers'][chat_id]
-                await update.message.reply_text(f"✅ Correct! {username} earned 10 points! Total: {new_score}")
+
+                # Progress math quest
+                was_com = progress_daily_quest(user_id, "math")
+                add_rewards(user_id, username, 20, 40, won=True)
+
+                reply_text = f"✅ Correct! {username} earned 10 points! Total: {new_score}"
+                if was_com:
+                    reply_text += "\n\n🎯 **DAILY QUEST COMPLETED!** Use `/quest` to claim!"
+                await update.message.reply_text(reply_text)
                 return
         except ValueError:
             pass
 
-    # Check for active multiplayer/solo game answers
+    # Check active games
     game_res = game_manager.handle_lobby_answer(chat_id, user_id, text)
     if game_res:
-        # User guessed correctly in trivia/scramble lobby! Add rewards to DB
         leveled_up, lvl, rank = add_rewards(user_id, username, game_res['coins'], game_res['xp'], won=True)
 
+        # Progress play quest
+        was_com = progress_daily_quest(user_id, "play")
+
         reply_text = game_res['msg']
+        if was_com:
+            reply_text += "\n\n🎯 **DAILY QUEST COMPLETED!** Use `/quest` to claim!"
         if leveled_up:
             reply_text += f"\n\n⚡ **LEVEL UP!** **{username}** reached Level **{lvl}** ({rank})! 👑"
             unlock_achievement(user_id, "Rank Master")
@@ -352,9 +387,14 @@ async def dice_game(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     results, winner_id, winner_name = result
-    # Earn rewards
     add_rewards(winner_id, winner_name, 50, 100, won=True)
     new_score = update_score(winner_id, winner_name, 20)
+
+    # Progress play quest for all participants
+    lobby = game_manager.active_games.get(chat_id)
+    if lobby:
+        for p_id in lobby.get('players', {}):
+            progress_daily_quest(p_id, "play")
 
     res_text = "🎲 DICE GAME RESULTS:\n" + "\n".join(results)
     res_text += f"\n\n🏆 Winner: {winner_name} (+50 Coins, +100 XP)! Total legacy score: {new_score}"
@@ -365,13 +405,11 @@ async def join_game(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     username = update.effective_user.username or update.effective_user.first_name
 
-    # Check modern lobby first
     success, res = game_manager.join_lobby(chat_id, user_id, username)
     if success:
         await update.message.reply_text(res, parse_mode="Markdown")
         return
 
-    # Check legacy dice lobby
     if game_manager.join_dice_game(chat_id, user_id, username):
         await update.message.reply_text(f"✅ {username} joined the dice game!")
     else:
@@ -379,7 +417,6 @@ async def join_game(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def emoji_game(update: Update, context: ContextTypes.DEFAULT_TYPE):
     emoji, answer = game_manager.start_emoji_guess()
-    # Opens scramble/lobby using emoji
     chat_id = update.effective_chat.id
     await update.message.reply_text(f"🧩 **Emoji Scramble Guess!**\n\nWhat is the name of this object/animal: {emoji}?\n\nUnscramble/guess directly by typing it!")
 
@@ -393,8 +430,15 @@ async def build_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("⚠️ Please specify a character name! Example: `/build SP Aizen`", parse_mode="Markdown")
         return
 
+    user_id = update.effective_user.id
     query = " ".join(context.args)
     response = get_build_response(query)
+
+    # Progress build quest
+    was_com = progress_daily_quest(user_id, "build")
+    if was_com:
+        response += "\n\n🎯 **DAILY QUEST COMPLETED!** Use `/quest` to claim!"
+
     await update.message.reply_text(response, parse_mode="Markdown")
 
 async def card_info_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -408,9 +452,6 @@ async def card_info_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def update_db_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
-    # Simple restriction to owner/admins
-    if user_id != 123456789: # replace/mock owner
-        pass
     import data_updater
     data_updater.update_database()
     data_manager.reload()
@@ -484,7 +525,6 @@ async def bonds_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     char = data_manager.find_item("characters", query)
     if char:
         b = char['bonds']
-        # Displays ALL bonds separated beautifully (Requirement 3 & 4)
         res = (
             f"🔗 **ALL RECOMMENDED BONDS FOR {char['name'].upper()}** 🔗\n\n"
             f"⚔️ **ALL Recommended Attack Bonds**\n" + "\n".join([f"- {x}" for x in b.get('attack', [])]) + "\n\n"
@@ -496,8 +536,15 @@ async def bonds_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("❌ Character not found.")
 
 async def meta_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
     meta_data = data_manager.get_meta()
     response = format_meta(meta_data)
+
+    # Progress meta quest
+    was_com = progress_daily_quest(user_id, "meta")
+    if was_com:
+        response += "\n\n🎯 **DAILY QUEST COMPLETED!** Use `/quest` to claim!"
+
     await update.message.reply_text(response, parse_mode="Markdown")
 
 async def event_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -570,6 +617,11 @@ async def tierlist_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await meta_command(update, context)
 
 async def news_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # Dynamic news with potential custom admin override announcements
+    custom_news = get_admin_setting("clan_announcement")
+    if custom_news:
+        await update.message.reply_text(f"📢 **LATEST CLAN ANNOUNCEMENT (ADMIN)**\n\n{custom_news}", parse_mode="Markdown")
+        return
     await event_command(update, context)
 
 async def ask_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -581,6 +633,13 @@ async def ask_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = " ".join(context.args)
 
     response = get_ai_response(query, chat_id, user_id)
+
+    # Check math progression quest
+    if "🧮 **Calculation:**" in response:
+        was_com = progress_daily_quest(user_id, "math")
+        if was_com:
+            response += "\n\n🎯 **DAILY QUEST COMPLETED!** Use `/quest` to claim!"
+
     await update.message.reply_text(response, parse_mode="Markdown")
 
 async def daily_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -596,7 +655,6 @@ async def profile_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     username = update.effective_user.username or update.effective_user.first_name
     p = get_user_profile(user_id)
     if not p:
-        # Save initial default profile in DB by giving tiny initial rewards
         add_rewards(user_id, username, 0, 10, won=False)
         p = get_user_profile(user_id)
 
@@ -617,6 +675,207 @@ async def profile_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"🏆 **UNLOCKED ACHIEVEMENTS:**\n" + (", ".join([f"🏅 `{a}`" for a in p['achievements']]) if p['achievements'] else "No achievements unlocked yet.")
     )
     await update.message.reply_text(profile_text, parse_mode="Markdown")
+
+# --- NEW: Daily Quest Bot Commands ---
+async def quest_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+    username = update.effective_user.username or update.effective_user.first_name
+
+    q = get_or_create_daily_quest(user_id)
+
+    status_emoji = "⏳ In Progress"
+    if q["completed"] == 1:
+        status_emoji = "✅ Completed! Use `/claimquest` to claim your rewards!"
+    elif q["completed"] == 2:
+        status_emoji = "🎁 Claimed & Redeemed"
+
+    res = (
+        f"📋 **DAILY ACTIVE QUEST FOR {username.upper()}** 📋\n\n"
+        f"🎯 **Quest:** {q['name']}\n"
+        f"📊 **Progress:** `{q['progress']} / {q['target']}`\n"
+        f"🏅 **Status:** {status_emoji}\n\n"
+        f"🪙 **Rewards:** **{q['reward_coins']} Coins** & **{q['reward_xp']} XP**!\n\n"
+        f"💡 *Quests reset automatically every day at midnight GMT!*"
+    )
+    await update.message.reply_text(res, parse_mode="Markdown")
+
+async def claim_quest_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+    username = update.effective_user.username or update.effective_user.first_name
+
+    rewards = claim_daily_quest_rewards(user_id, username)
+    if rewards:
+        coins, xp = rewards
+        await update.message.reply_text(
+            f"🎉 **Quest Claimed successfully!**\n\n"
+            f"Earned: **{coins} Coins** 🪙 & **{xp} XP** ⚡\n"
+            f"Your Soul Reaper profile has been updated!", parse_mode="Markdown"
+        )
+    else:
+        q = get_or_create_daily_quest(user_id)
+        if q["completed"] == 2:
+            await update.message.reply_text("❌ You have already claimed today's quest rewards!")
+        else:
+            await update.message.reply_text(f"⏳ Your daily quest is not completed yet!\nProgress: `{q['progress']}/{q['target']}`")
+
+# --- NEW: Admin Panel Settings Commands ---
+async def admin_setnews_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+    if user_id not in ADMIN_IDS:
+        # Check if chat admin if not in mock owner list
+        member = await context.bot.get_chat_member(update.effective_chat.id, user_id)
+        if member.status not in [ChatMember.ADMINISTRATOR, ChatMember.OWNER]:
+            await update.message.reply_text("❌ Administrative privilege required to perform this action.")
+            return
+
+    if not context.args:
+        await update.message.reply_text("Usage: `/admin_setnews <text>`", parse_mode="Markdown")
+        return
+
+    text = " ".join(context.args)
+    set_admin_setting("clan_announcement", text)
+    await update.message.reply_text("✅ **Successfully updated official Clan Announcement/News!**", parse_mode="Markdown")
+
+async def admin_setbanner_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+    if user_id not in ADMIN_IDS:
+        member = await context.bot.get_chat_member(update.effective_chat.id, user_id)
+        if member.status not in [ChatMember.ADMINISTRATOR, ChatMember.OWNER]:
+            await update.message.reply_text("❌ Administrative privilege required to perform this action.")
+            return
+
+    if len(context.args) < 2:
+        await update.message.reply_text("Usage: `/admin_setbanner <server_day> <banner_text>`", parse_mode="Markdown")
+        return
+
+    day_str = context.args[0]
+    banner_text = " ".join(context.args[1:])
+    set_admin_setting(f"banner_day_{day_str}", banner_text)
+    await update.message.reply_text(f"✅ **Successfully overridden Banner for Day {day_str}!**", parse_mode="Markdown")
+
+async def admin_setevent_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+    if user_id not in ADMIN_IDS:
+        member = await context.bot.get_chat_member(update.effective_chat.id, user_id)
+        if member.status not in [ChatMember.ADMINISTRATOR, ChatMember.OWNER]:
+            await update.message.reply_text("❌ Administrative privilege required to perform this action.")
+            return
+
+    if not context.args:
+        await update.message.reply_text("Usage: `/admin_setevent <custom_schedule_text>`", parse_mode="Markdown")
+        return
+
+    sched_text = " ".join(context.args)
+    set_admin_setting("custom_schedule", sched_text)
+    await update.message.reply_text("✅ **Successfully updated official Custom Event Schedule!**", parse_mode="Markdown")
+
+# --- NEW: Gacha Character Summon Simulator ---
+async def gacha_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+    username = update.effective_user.username or update.effective_user.first_name
+
+    # Rate definitions: SP (1.5%), SSR (5.0%), SR (20%), R (73.5%)
+    r = random.random() * 100
+    if r <= 1.5:
+        rarity = "SP"
+        pool = ["sp___sosuke_aizen", "final_fusion___sosuke_aizen_ffa"]
+    elif r <= 6.5:
+        rarity = "SSR"
+        pool = ["demon_byakuya_kuchiki", "sp_byakuya_kuchiki", "demon_fox_gin_ichimaru_fox_gin"]
+    elif r <= 26.5:
+        rarity = "SR"
+        pool = ["coco_byakuya_kuchiki", "coco_gin_ichimaru", "halloween_gin_ichimaru_fox_gin"]
+    else:
+        rarity = "R"
+        pool = ["resurrection_barragan_bara_v2", "coco_grimmjow"]
+
+    char_key = random.choice(pool)
+    char_data = data_manager.find_item("characters", char_key)
+    char_name = char_data["name"] if char_data else char_key.replace("_", " ").title()
+
+    # Track in database inventory
+    add_to_inventory(user_id, char_key, char_name, rarity)
+
+    # Progress gacha quest
+    was_com = progress_daily_quest(user_id, "gacha")
+
+    # Reward XP for summoning
+    add_rewards(user_id, username, 10, 20)
+
+    # Frame gacha output beautifully
+    stars = "⭐" * (5 if rarity in ["SP", "SSR"] else 3)
+    res = (
+        f"🎪 **GACHA PREMIUM SUMMON** 🎪\n\n"
+        f"💫 **You pulled:** `{char_name}`\n"
+        f"🏅 **Rarity:** **[{rarity}]** {stars}\n\n"
+        f"✨ Saved to your dynamic profile inventory! Use `/inventory` to check your collection!"
+    )
+    if was_com:
+        res += "\n\n🎯 **DAILY QUEST COMPLETED!** Use `/quest` to claim!"
+
+    await update.message.reply_text(res, parse_mode="Markdown")
+
+async def gacha10_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+    username = update.effective_user.username or update.effective_user.first_name
+
+    pulls = []
+    for _ in range(10):
+        r = random.random() * 100
+        if r <= 1.5:
+            rarity = "SP"
+            pool = ["sp___sosuke_aizen", "final_fusion___sosuke_aizen_ffa"]
+        elif r <= 6.5:
+            rarity = "SSR"
+            pool = ["demon_byakuya_kuchiki", "sp_byakuya_kuchiki", "demon_fox_gin_ichimaru_fox_gin"]
+        elif r <= 26.5:
+            rarity = "SR"
+            pool = ["coco_byakuya_kuchiki", "coco_gin_ichimaru", "halloween_gin_ichimaru_fox_gin"]
+        else:
+            rarity = "R"
+            pool = ["resurrection_barragan_bara_v2", "coco_grimmjow"]
+
+        char_key = random.choice(pool)
+        char_data = data_manager.find_item("characters", char_key)
+        char_name = char_data["name"] if char_data else char_key.replace("_", " ").title()
+
+        add_to_inventory(user_id, char_key, char_name, rarity)
+        pulls.append((char_name, rarity))
+
+    progress_daily_quest(user_id, "gacha")
+    add_rewards(user_id, username, 80, 150)
+
+    res_list = []
+    for i, (name, rarity) in enumerate(pulls, 1):
+        res_list.append(f"{i}. **[{rarity}]** {name}")
+
+    res = (
+        f"🎪 **GACHA 10X MULTI-SUMMON** 🎪\n\n"
+        + "\n".join(res_list) + "\n\n"
+        f"✨ All units saved to your inventory! Use `/inventory` to view your character vault! 👑"
+    )
+    await update.message.reply_text(res, parse_mode="Markdown")
+
+async def inventory_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+    username = update.effective_user.username or update.effective_user.first_name
+
+    inv = get_inventory(user_id)
+    if not inv:
+        await update.message.reply_text("📪 **Your Character Vault is empty!**\n\nRun `/gacha` or `/gacha10` to summon powerful units!", parse_mode="Markdown")
+        return
+
+    inv_list = []
+    for name, rarity, count in inv:
+        stars = "⭐" if rarity in ["SP", "SSR"] else "▫️"
+        inv_list.append(f"• **[{rarity}]** {name} x{count} {stars}")
+
+    res = (
+        f"🏛️ **GACHA CHARACTER VAULT FOR {username.upper()}** 🏛️\n\n"
+        + "\n".join(inv_list) + "\n\n"
+        f"💎 *Keep summoning to upgrade your collection level!*"
+    )
+    await update.message.reply_text(res, parse_mode="Markdown")
 
 async def games_menu_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     res = (
@@ -703,7 +962,6 @@ def main():
         logging.error("BOT_TOKEN bulunamadı! Lütfen environment variable olarak tanımlayın.")
         return
 
-    # Initialize SQLite database gracefully with migrations
     init_db()
 
     application = Application.builder().token(TOKEN).build()
@@ -720,7 +978,12 @@ def main():
             "games": "View game catalog & rules",
             "daily": "Claim daily Coin & XP rewards!",
             "profile": "View level, rank, XP, and achievements",
-            "compare": "Compare two characters side-by-side"
+            "compare": "Compare two characters side-by-side",
+            "quest": "View your randomized Daily active Quest!",
+            "claimquest": "Claim rewards for completed quests!",
+            "gacha": "Summon a randomized Bleach character!",
+            "gacha10": "Perform a premium 10x character pull!",
+            "inventory": "View your collected character inventory!"
         }
         for cmd, desc in additional_cmds.items():
             if cmd not in COMMANDS:
@@ -767,6 +1030,20 @@ def main():
     application.add_handler(CommandHandler("games", games_menu_command))
     application.add_handler(CommandHandler("play", play_lobby_command))
     application.add_handler(CommandHandler("startgame", start_game_command))
+
+    # Daily active Quest commands
+    application.add_handler(CommandHandler("quest", quest_command))
+    application.add_handler(CommandHandler("claimquest", claim_quest_command))
+
+    # Gacha summon simulator commands
+    application.add_handler(CommandHandler("gacha", gacha_command))
+    application.add_handler(CommandHandler("gacha10", gacha10_command))
+    application.add_handler(CommandHandler("inventory", inventory_command))
+
+    # Admin Panel overriding settings commands
+    application.add_handler(CommandHandler("admin_setnews", admin_setnews_command))
+    application.add_handler(CommandHandler("admin_setbanner", admin_setbanner_command))
+    application.add_handler(CommandHandler("admin_setevent", admin_setevent_command))
 
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
