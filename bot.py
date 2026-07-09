@@ -1,4 +1,5 @@
 from utils.leaderboard import get_top
+from utils.translator import translate, SUPPORTED
     get_current_day,
     get_banner,
     get_next_banner,
@@ -147,3 +148,39 @@ def leaderboard(message):
         text += f"{medal} {player['username']} • {player['score']} pts\n"
 
     bot.reply_to(message, text)
+
+
+@bot.message_handler(commands=["translate"])
+def translate_command(message):
+    args = message.text.split(maxsplit=2)
+
+    if len(args) < 3:
+        bot.reply_to(
+            message,
+            "Usage:\n/translate <language> <text>\n\nExample:\n/translate tr Hello World"
+        )
+        return
+
+    lang = args[1].lower()
+
+    if lang not in SUPPORTED:
+        bot.reply_to(
+            message,
+            "Supported languages:\n"
+            + ", ".join(SUPPORTED.keys())
+        )
+        return
+
+    try:
+        result = translate(args[2], lang)
+
+        bot.reply_to(
+            message,
+            f"🌍 {SUPPORTED[lang]}\n\n{result}"
+        )
+
+    except Exception:
+        bot.reply_to(
+            message,
+            "Translation failed."
+        )
