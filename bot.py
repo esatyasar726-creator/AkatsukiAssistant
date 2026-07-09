@@ -7,10 +7,6 @@ from utils.banner_utils import (
     get_next_banner,
     get_previous_banner,
 )
-    get_banner,
-    get_next_banner,
-    get_previous_banner,
-)
 
 
 @bot.message_handler(commands=["banner"])
