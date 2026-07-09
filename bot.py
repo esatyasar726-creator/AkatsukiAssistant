@@ -1,4 +1,4 @@
-from utils.banner_utils import (
+from utils.leaderboard import get_top
     get_current_day,
     get_banner,
     get_next_banner,
@@ -129,3 +129,21 @@ GMT
 07:00 PM
 08:00 PM"""
     )
+
+
+@bot.message_handler(commands=["leaderboard"])
+def leaderboard(message):
+    ranking = get_top()
+
+    if not ranking:
+        bot.reply_to(message, "🏆 Leaderboard is empty.")
+        return
+
+    medals = ["🥇", "🥈", "🥉"]
+    text = "🏆 AKATSUKI LEADERBOARD\n\n"
+
+    for i, player in enumerate(ranking):
+        medal = medals[i] if i < 3 else f"{i+1}."
+        text += f"{medal} {player['username']} • {player['score']} pts\n"
+
+    bot.reply_to(message, text)
