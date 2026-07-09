@@ -41,7 +41,7 @@ class DataManager:
             return collection[query_clean]
 
         best_match, score = process.extractOne(query.lower(), choices)
-        if score > 75:
+        if score >= 75:
             return collection[best_match]
         return None
 

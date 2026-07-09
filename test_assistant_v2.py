@@ -22,7 +22,7 @@ def test_assistant():
 
     # Test Meta Info
     print("\n--- Meta Info Test ---")
-    meta = data_manager.get_meta()
+    meta = data_manager.get_collection("meta")
     if meta:
         print(format_meta(meta))
     else:

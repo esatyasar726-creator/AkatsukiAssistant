@@ -18,7 +18,6 @@ COMMANDS = {
     "character": "Detailed character info",
     "assist": "Assist character analysis",
     "guard": "Guard character analysis",
-    "build": "Best build recommendations",
     "bonds": "View character bonds",
     "meta": "Current PvP/PvE meta",
     "event": "Events and rotations",

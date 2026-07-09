@@ -2,32 +2,10 @@
 
 CHARACTERS = {
     "sp aizen": {
-        "name": "SP Aizen (Final Fusion)",
-        "build": {
-            "main": "SP Aizen (Final Fusion)",
-            "assists": ["Bankai Shinji", "Halloween Nelliel"],
-            "guards": ["Genryusai Yamamoto", "Sosuke Aizen (Throne)"],
-            "cards": ["Final Fusion", "God of Destruction", "Hogyoku's Will"],
-            "bonds": {
-                "attack": ["Ichigo Kurosaki (Mugetsu)", "Gin Ichimaru"],
-                "hp": ["Momo Hinamori", "Kaname Tosen"],
-                "defense": ["Barragan Louisenbairn", "Tier Halibel"]
-            }
-        }
+        "name": "SP Aizen (Final Fusion)"
     },
     "tensa": {
-        "name": "Tensa Zangetsu",
-        "build": {
-            "main": "Tensa Zangetsu",
-            "assists": ["White Ichigo", "Yoruichi (Armor)"],
-            "guards": ["Kisuke Urahara", "Isshin Kurosaki"],
-            "cards": ["Zangetsu's Power", "Inner Hollow", "Bankai Training"],
-            "bonds": {
-                "attack": ["Ichigo Kurosaki", "Old Man Zangetsu"],
-                "hp": ["Orihime Inoue", "Yasutora Sado"],
-                "defense": ["Uryu Ishida", "Shunsui Kyoraku"]
-            }
-        }
+        "name": "Tensa Zangetsu"
     }
 }
 
@@ -64,11 +42,6 @@ CARDS = {
             "hp": ["Gin Ichimaru"],
             "defense": ["Tosen"]
         },
-        "best_builds": {
-            "main": ["SP Aizen", "Mugetsu"],
-            "assists": ["Nelliel"],
-            "guards": ["Yamamoto"]
-        },
         "rating": {
             "overall": "9.5/10",
             "pvp": "10/10",
@@ -85,6 +58,5 @@ CARDS = {
 # General knowledge base for the "AI" to answer common questions
 GENERAL_KNOWLEDGE = {
     "how to get sp characters": "SP characters can be obtained through Special Gacha events, typically rotating every 2 weeks. Save your crystals!",
-    "best build for beginners": "Focus on Ichigo (Vasto Lorde) or Ulquiorra (Resurrección). They are easier to build and very effective in early-mid game.",
     "what are guards": "Guards provide defensive stats and special protective skills when your health drops below a certain threshold."
 }

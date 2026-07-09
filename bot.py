@@ -37,7 +37,6 @@ HELP = """
 **Game Info**
 /cardinfo <name> - Professional card analysis
 /character <name> - Detailed character data
-/build <name> - Best builds & all bonds
 /bonds <name> - Full bond recommendations
 /meta - Current PvP/PvE Meta & Tier List
 /compare <c1> vs <c2> - Compare two entities
@@ -116,17 +115,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         response = ai_assistant.get_response(chat_id, update.message.text)
         await update.message.reply_text(response, parse_mode="Markdown")
 
-async def build_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if not context.args:
-        await update.message.reply_text("Usage: /build <character name>")
-        return
-    query = " ".join(context.args)
-    char = data_manager.find_item("characters", query)
-    if char:
-        await update.message.reply_text(format_character_info(char), parse_mode="Markdown")
-    else:
-        await update.message.reply_text("❌ Character not found.")
-
 async def card_info_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not context.args:
         await update.message.reply_text("Usage: /cardinfo <card name>")
@@ -152,7 +140,6 @@ def main():
         cmds = [
             BotCommand("help", "All commands"),
             BotCommand("profile", "Your stats"),
-            BotCommand("build", "Best builds"),
             BotCommand("cardinfo", "Card analysis"),
             BotCommand("meta", "Current Meta"),
             BotCommand("ask", "Chat with AI"),
@@ -168,7 +155,6 @@ def main():
     app.add_handler(CommandHandler("help", help_command))
     app.add_handler(CommandHandler("profile", profile_command))
     app.add_handler(CommandHandler("ask", ask_command))
-    app.add_handler(CommandHandler("build", build_command))
     app.add_handler(CommandHandler("cardinfo", card_info_command))
     app.add_handler(CommandHandler("trivia", trivia_command))
     app.add_handler(CommandHandler("math", math_command))

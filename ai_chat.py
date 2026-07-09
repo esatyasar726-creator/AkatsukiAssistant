@@ -44,15 +44,13 @@ class AIAssistant:
             return "Hello there! How's your day going? I'm ready to help with whatever you need."
 
         # 4. Expert Game Advice Bridge
-        if "build" in query_lower or "card" in query_lower:
+        if "card" in query_lower:
             from data_manager import data_manager
-            from formatters import format_character_info, format_card_info
-            # Attempt to find character/card in query
-            for coll in ["characters", "cards"]:
-                item = data_manager.find_item(coll, query)
-                if item:
-                    return f"As an expert in the game, here's what I recommend:\n\n" + \
-                           (format_character_info(item) if coll == "characters" else format_card_info(item))
+            from formatters import format_card_info
+            # Attempt to find card in query
+            item = data_manager.find_item("cards", query)
+            if item:
+                return f"As an expert in the game, here's what I recommend:\n\n" + format_card_info(item)
 
         # 5. Intelligent Web Fallback (Simulates General Knowledge)
         web_info = self._get_web_context(query)
