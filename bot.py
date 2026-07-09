@@ -1,7 +1,6 @@
 import logging
 import os
 from datetime import datetime, time
-import pytz
 from telegram import Update
 from telegram.ext import (
     Application,
