@@ -1,4 +1,4 @@
-from fuzzywuzzy import process
+from rapidfuzz import process
 from game_data import CHARACTERS, CARDS, GENERAL_KNOWLEDGE
 from banner_data import REFERENCE_DATE, REFERENCE_DAY
 from datetime import datetime, timedelta
@@ -6,9 +6,11 @@ from datetime import datetime, timedelta
 def find_best_match(query, choices):
     if not query:
         return None
-    best_match, score = process.extractOne(query, choices)
-    if score > 70: # Threshold for fuzzy matching
-        return best_match
+    result = process.extractOne(query, choices)
+    if result:
+        best_match, score, index = result
+        if score > 70: # Threshold for fuzzy matching
+            return best_match
     return None
 
 def get_current_day():
@@ -31,33 +33,6 @@ def get_availability_text(item_name):
     else:
         wait_days = 30 - (day % 30)
         return f"Available in {wait_days} days ⏳ (Estimated)"
-
-def get_build_response(char_query):
-    best_match = find_best_match(char_query.lower(), list(CHARACTERS.keys()))
-    if not best_match:
-        return "❌ Character not found in our database. Try another one!"
-
-    char = CHARACTERS[best_match]
-    build = char['build']
-
-    response = (
-        f"⚔️ **BEST BUILD FOR {char['name'].upper()}** ⚔️\n\n"
-        f"👤 **Main Character:**\n{build['main']}\n\n"
-        f"👥 **Assist Characters:**\n- " + "\n- ".join(build['assists']) + "\n\n"
-        f"🛡 **Guard Characters:**\n- " + "\n- ".join(build['guards']) + "\n\n"
-        f"🃏 **Recommended Cards:**\n"
-    )
-
-    for card in build['cards']:
-        response += f"- {card} ({get_availability_text(card)})\n"
-
-    response += (
-        f"\n🔗 **Bond Recommendations:**\n"
-        f"⚔️ **Attack Bonds:**\n- " + "\n- ".join(build['bonds']['attack']) + "\n\n"
-        f"❤️ **HP Bonds:**\n- " + "\n- ".join(build['bonds']['hp']) + "\n\n"
-        f"🛡 **Defense/Armor Bonds:**\n- " + "\n- ".join(build['bonds']['defense'])
-    )
-    return response
 
 def get_card_analysis(card_query):
     best_match = find_best_match(card_query.lower(), list(CARDS.keys()))
@@ -84,10 +59,6 @@ def get_card_analysis(card_query):
         f"⚔️ Attack Bonds: {', '.join(card['bonds']['attack'])}\n"
         f"❤️ HP Bonds: {', '.join(card['bonds']['hp'])}\n"
         f"🛡 Defense Bonds: {', '.join(card['bonds']['defense'])}\n\n"
-        f"🎯 **Best Builds:**\n"
-        f"- Main: {', '.join(card['best_builds']['main'])}\n"
-        f"- Assists: {', '.join(card['best_builds']['assists'])}\n"
-        f"- Guards: {', '.join(card['best_builds']['guards'])}\n\n"
         f"📊 **Final Rating:**\n"
         f"- Overall: {card['rating']['overall']}\n"
         f"- PvP: {card['rating']['pvp']}\n"
@@ -103,18 +74,4 @@ def get_ai_response(query):
         if key in query_lower:
             return value
 
-    # Check if they are asking about a character build
-    if "build" in query_lower:
-        # Try to extract character name - very simple approach
-        words = query_lower.split()
-        for word in words:
-            if word in CHARACTERS:
-                return get_build_response(word)
-        # Fallback to whole query minus 'build'
-        potential_name = query_lower.replace("build", "").replace("for", "").strip()
-        if potential_name:
-            match = find_best_match(potential_name, list(CHARACTERS.keys()))
-            if match:
-                return get_build_response(match)
-
-    return "I'm not sure about that. I specialize in Bleach Mobile 3D builds, cards, and game mechanics. Try asking 'build for SP Aizen' or use /cardinfo!"
+    return "I'm not sure about that. I specialize in Bleach Mobile 3D cards and game mechanics. Try asking or use /cardinfo!"

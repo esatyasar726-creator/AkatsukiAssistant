@@ -1,7 +1,7 @@
 import json
 import os
 import logging
-from fuzzywuzzy import process
+from rapidfuzz import process
 
 class DataManager:
     def __init__(self, data_dir="data"):
@@ -40,9 +40,11 @@ class DataManager:
         if query_clean in choices:
             return collection[query_clean]
 
-        best_match, score = process.extractOne(query.lower(), choices)
-        if score > 75:
-            return collection[best_match]
+        result = process.extractOne(query.lower(), choices)
+        if result:
+            best_match, score, index = result
+            if score >= 75:
+                return collection[best_match]
         return None
 
     def reload(self):
