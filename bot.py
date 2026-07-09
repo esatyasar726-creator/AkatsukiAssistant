@@ -1,3 +1,4 @@
+from utils.admin_panel import is_admin
 from utils.leaderboard import get_top
 from utils.translator import translate, SUPPORTED
     get_current_day,
