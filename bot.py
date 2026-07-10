@@ -223,3 +223,26 @@ if __name__ == "__main__":
         timeout=60,
         long_polling_timeout=60
     )
+
+
+from flask import Flask, request
+import os
+
+app = Flask(__name__)
+
+WEBHOOK_URL = os.getenv("WEBHOOK_URL")
+
+@app.route(f"/{TOKEN}", methods=["POST"])
+def webhook():
+    update = telebot.types.Update.de_json(request.stream.read().decode("utf-8"))
+    bot.process_new_updates([update])
+    return "OK", 200
+
+@app.route("/")
+def index():
+    return "Akatsuki Assistant is running!"
+
+if __name__ == "__main__":
+    bot.remove_webhook()
+    bot.set_webhook(url=f"{WEBHOOK_URL}/{TOKEN}")
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
