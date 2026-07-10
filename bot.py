@@ -1,3 +1,6 @@
+import os
+import telebot
+
 from utils.admin_panel import is_admin
 from utils.leaderboard import get_top
 from utils.translator import translate, SUPPORTED
@@ -8,6 +11,8 @@ from utils.banner_utils import (
     get_previous_banner,
 )
 
+TOKEN = os.getenv("BOT_TOKEN")
+bot = telebot.TeleBot(TOKEN)
 
 @bot.message_handler(commands=["banner"])
 def banner(message):
