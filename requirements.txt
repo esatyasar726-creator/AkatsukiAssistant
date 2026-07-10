@@ -6,3 +6,5 @@ pyTelegramBotAPI==4.27.0
 deep-translator==1.11.4
 python-dotenv==1.0.1
 requests==2.32.3
+Flask==3.1.0
+gunicorn==23.0.0
